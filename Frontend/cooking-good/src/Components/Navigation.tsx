@@ -114,18 +114,19 @@ const Navigation = () => {
                   open={adminOpen}
                   anchorEl={adminAnchorEl}
                   onClose={handleAdminClose}
+                  onClick={handleAdminClose}
                 >
-                  <MenuItem>
-                    <MenuLink to="/categories">Kategorie</MenuLink>
+                  <MenuItem component={MenuLink} to="/categories">
+                    Kategorie
                   </MenuItem>
-                  <MenuItem>
-                    <MenuLink to="/reports">Zgłoszenia</MenuLink>
+                  <MenuItem component={MenuLink} to="/reports">
+                    Zgłoszenia
                   </MenuItem>
-                  <MenuItem>
-                    <MenuLink to="/posts">Ciekawostki</MenuLink>
+                  <MenuItem component={MenuLink} to="/posts">
+                    Ciekawostki
                   </MenuItem>
-                  <MenuItem>
-                    <MenuLink to="/users">Użytkownicy</MenuLink>
+                  <MenuItem component={MenuLink} to="/users">
+                    Użytkownicy
                   </MenuItem>
                 </Menu>
 
@@ -156,20 +157,22 @@ const Navigation = () => {
                   open={userOpen}
                   anchorEl={userAnchorEl}
                   onClose={handleUserClose}
+                  onClick={handleUserClose}
                 >
-                  <MenuItem>
-                    <MenuLink to="/add-recipe">Dodaj przepis</MenuLink>
+                  <MenuItem component={MenuLink} to="/add-recipe">
+                    Dodaj przepis
                   </MenuItem>
-                  <MenuItem>
-                    <MenuLink to={`/user-profile/${user?.userId}`}>
-                      Panel użytkownika
-                    </MenuLink>
+                  <MenuItem
+                    component={MenuLink}
+                    to={`/user-profile/${user?.userId}`}
+                  >
+                    Panel użytkownika
                   </MenuItem>
-                  <MenuItem>
-                    <MenuLink to="/cart">Lista Zakupów</MenuLink>
+                  <MenuItem component={MenuLink} to="/cart">
+                    Lista Zakupów
                   </MenuItem>
-                  <MenuItem>
-                    <MenuLink to="/planner">Planer</MenuLink>
+                  <MenuItem component={MenuLink} to="/planner">
+                    Planer
                   </MenuItem>
                   <Divider />
                   <MenuItem>
@@ -179,7 +182,7 @@ const Navigation = () => {
                         p: 0,
                         m: 0,
                         color: (theme) => theme.palette.text.dark,
-                        fontSize: 18,
+                        fontSize: 16,
                         textTransform: "capitalize",
                       }}
                     >
