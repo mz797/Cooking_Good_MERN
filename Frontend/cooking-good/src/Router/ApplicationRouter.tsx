@@ -15,6 +15,7 @@ import ReportsPage from "../Pages/Admin/Reports/ReportsPage";
 import UsersPage from "../Pages/Admin/Users/UsersPage";
 import UserProfilePage from "../Pages/User/UserProfilePage";
 import ActivateAccount from "../Pages/Auth/ActivateAccount";
+import CreatePost from "../Pages/Admin/Posts/CreatePost";
 
 export const router = createBrowserRouter([
   {
@@ -36,6 +37,7 @@ export const router = createBrowserRouter([
       { path: "reports", element: <ReportsPage /> },
       { path: "user-profile/:userId", element: <UserProfilePage /> },
       { path: "users", element: <UsersPage /> },
+      { path: "posts", element: <CreatePost /> },
 
       {
         path: "recipes",

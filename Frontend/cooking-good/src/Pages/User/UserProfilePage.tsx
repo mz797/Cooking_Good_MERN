@@ -2,7 +2,6 @@ import {
   Avatar,
   Badge,
   Box,
-  Divider,
   IconButton,
   Stack,
   Typography,
@@ -12,7 +11,6 @@ import { Container } from "@mui/system";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import Recipe from "../../Components/Recipes/Recipe/Recipe";
 import { TUser } from "../../types/user/TUser";
 import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
 import { useSelector } from "react-redux";
@@ -21,7 +19,7 @@ import { showStatus } from "../Admin/Users/UsersPage";
 import UpdateUserImage from "../../Components/User/UpdateUserImage";
 import DriveFileRenameOutlineIcon from "@mui/icons-material/DriveFileRenameOutline";
 import UpdateUserDescription from "../../Components/User/UpdateUserDescription";
-import EmptyState from "../../Components/common/EmptyState";
+import RecipeList from "../../Components/Recipes/Recipe/RecipeList";
 
 const UserProfilePage = () => {
   const theme = useTheme();
@@ -34,7 +32,7 @@ const UserProfilePage = () => {
 
   useEffect(() => {
     fetchUser();
-  }, []);
+  }, [userId]);
 
   const fetchUser = async () => {
     const response = await axios.get(`http://localhost:8080/users/${userId}`);
@@ -189,31 +187,13 @@ const UserProfilePage = () => {
                 </Typography>
               </Box>
             )}
-            <Typography
-              variant="h4"
-              sx={{
-                textAlign: "center",
-                color: (theme) => theme.palette.primary.main,
-              }}
-            >
-              Przepisy
-            </Typography>
-            <Divider sx={{ my: 3 }} />
-            <Stack
-              direction="row"
-              spacing={{ xs: 1, sm: 2 }}
-              useFlexGap
-              flexWrap="wrap"
-            >
-              {user.recipes.map((item) => (
-                <Recipe key={item._id} recipe={item} />
-              ))}
-              {user.recipes.length === 0 && (
-                <EmptyState
-                  message={`Użytkownik ${user.name} nie dodał jeszcze żadnych przepisów.`}
-                />
-              )}
-            </Stack>
+
+            <RecipeList
+              divider
+              title="Przepisy"
+              recipes={user.recipes}
+              emptyStateMessage={`Użytkownik ${user.name} nie dodał jeszcze żadnych przepisów.`}
+            />
           </Container>
         </>
       )}

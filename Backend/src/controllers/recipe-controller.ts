@@ -617,7 +617,7 @@ export const downloadRecipe = async (
       .map(
         (
           ingredient
-        ) => `<div style="width:100%; display:flex; justify-content:space-between; border-bottom:1px solid #999;letter-spacing: 1; padding:8px:text-transform:uppercase;">
+        ) => `<div style="width:100%; display:flex; justify-content:space-between; border-bottom:1px solid #999;letter-spacing: '1px'; padding:8px:text-transform:uppercase;">
 		<span>${ingredient.name}</span>
 		<span>${ingredient.amount}</span>
 		</div>`

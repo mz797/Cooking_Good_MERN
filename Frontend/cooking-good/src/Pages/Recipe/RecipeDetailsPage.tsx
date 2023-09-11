@@ -2,6 +2,7 @@ import {
   Avatar,
   Box,
   Button,
+  CircularProgress,
   Container,
   Divider,
   Grid,
@@ -19,17 +20,17 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { RecipeType } from "../../types/recipe-types";
 import { RootState } from "../../store/store";
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
-import StarIcon from "@mui/icons-material/Star";
 import RateDialog from "../../Components/Recipes/Recipe/RateDialog";
 import DescriptionIcon from "@mui/icons-material/Description";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 
+import { RouterLink } from "../../Components/Navigation";
 import { useForm } from "react-hook-form";
 import Comment from "../../Components/Recipes/Recipe/Comment";
 import RecipeImage from "../../Components/Recipes/Recipe/RecipeImage";
-import { RouterLink } from "../../Components/Navigation";
 import LoginDialog from "../../Components/Auth/LoginDialog";
+import StarIcon from "@mui/icons-material/Star";
 
 type CommentType = {
   content: string;
@@ -50,6 +51,8 @@ const RecipeDetailsPage = () => {
   const [openRateDialog, setOpenRateDialog] = useState<boolean>(false);
   const [loginDialogOpen, setLoginDialogOpen] = useState<boolean>(false);
   const [loginDialogContent, setLoginDialogContent] = useState<string>("");
+  const [likeIsLoading, setLikeIsLoading] = useState<boolean>(false);
+  const [pdfIsLoading, setPdfIsLoading] = useState<boolean>(false);
   //
   // if (recipe && user) {
   //   console.log(recipe.likes.some((like) => like.creator === user.userId));
@@ -91,6 +94,7 @@ const RecipeDetailsPage = () => {
   };
   const handleFavorite = () => {
     if (!!user) {
+      setLikeIsLoading(true);
       axios
         .get(`http://localhost:8080/users/add-favorite/${user.userId}/${id}`, {
           headers: { Authorization: "Bearer " + token },
@@ -98,6 +102,7 @@ const RecipeDetailsPage = () => {
         .then((res) => {
           setRecipe(res.data.recipe);
           console.log(res);
+          setLikeIsLoading(false);
         });
     } else {
       setLoginDialogContent(
@@ -108,6 +113,7 @@ const RecipeDetailsPage = () => {
   };
   const handleDeleteFavorite = () => {
     if (!!user) {
+      setLikeIsLoading(true);
       axios
         .get(
           `http://localhost:8080/users/delete-favorite/${user.userId}/${id}`,
@@ -118,6 +124,7 @@ const RecipeDetailsPage = () => {
         .then((res) => {
           setRecipe(res.data.recipe);
           console.log(res);
+          setLikeIsLoading(false);
         });
     } else {
       setLoginDialogContent(
@@ -167,6 +174,7 @@ const RecipeDetailsPage = () => {
 
   const handleDownload = () => {
     if (!recipe) return;
+    setPdfIsLoading(true);
     axios({
       url: `http://localhost:8080/recipe/download/${id}`,
       method: "GET",
@@ -178,6 +186,7 @@ const RecipeDetailsPage = () => {
       link.setAttribute("download", `${recipe.name.split(" ").join("-")}.pdf`);
       document.body.appendChild(link);
       link.click();
+      setPdfIsLoading(false);
     });
   };
 
@@ -251,20 +260,32 @@ const RecipeDetailsPage = () => {
                   </Box>
                 )}
                 <IconButton onClick={handleDownload}>
-                  <PictureAsPdfIcon />
+                  {pdfIsLoading ? (
+                    <CircularProgress color="inherit" size={16} />
+                  ) : (
+                    <PictureAsPdfIcon />
+                  )}
                 </IconButton>
                 <IconButton onClick={handleOpenRate}>
                   <StarIcon />
                 </IconButton>
-                <IconButton>
-                  {!!user &&
-                  recipe.likes.some((like) => like.creator === user.userId) ? (
-                    <FavoriteIcon
-                      color="error"
-                      onClick={handleDeleteFavorite}
-                    />
+                <IconButton
+                  onClick={
+                    !!user &&
+                    recipe.likes.some((like) => like.creator === user.userId)
+                      ? handleDeleteFavorite
+                      : handleFavorite
+                  }
+                >
+                  {likeIsLoading ? (
+                    <CircularProgress color="inherit" size={16} />
+                  ) : !!user &&
+                    recipe.likes.some(
+                      (like) => like.creator === user.userId
+                    ) ? (
+                    <FavoriteIcon color="error" />
                   ) : (
-                    <FavoriteBorderIcon onClick={handleFavorite} />
+                    <FavoriteBorderIcon />
                   )}
                 </IconButton>
               </Stack>
@@ -463,17 +484,17 @@ const RecipeDetailsPage = () => {
   );
 
   /* <Grid
-                                                                                                      <Grid
-                                                                                                      item
-                                                                                                      xs={12}
-                                                                                                      sx={{ mt: 2, borderTop: "1px solid #999" }}>
-                                                                                                      <Stack direction="row" alignItems="center">
-                                                                                                      <ChatIcon sx={{ mr: 2, fontSize: 32 }} />
-                                                                                                      <Typography variant="h4">{`Komentarze(${recipe.comments.length})`}</Typography>
-                                                                                                      </Stack>
-                                                      
-                                                                                                              </Grid>
-                                                                                                          </Grid> */
+                                                                                                                                                <Grid
+                                                                                                                                                item
+                                                                                                                                                xs={12}
+                                                                                                                                                sx={{ mt: 2, borderTop: "1px solid #999" }}>
+                                                                                                                                                <Stack direction="row" alignItems="center">
+                                                                                                                                                <ChatIcon sx={{ mr: 2, fontSize: 32 }} />
+                                                                                                                                                <Typography variant="h4">{`Komentarze(${recipe.comments.length})`}</Typography>
+                                                                                                                                                </Stack>
+                                  
+                                                                                                                                                        </Grid>
+                                                                                                                                                    </Grid> */
 };
 export default RecipeDetailsPage;
 const Image = styled(Box)`
