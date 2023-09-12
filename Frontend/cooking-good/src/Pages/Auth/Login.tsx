@@ -67,10 +67,13 @@ const Login = () => {
   return (
     <Box
       sx={{
-        mt: 4,
+        minHeight: "100vh",
+        p: 4,
+        pt: 8,
         display: "flex",
         justifyContent: "center",
-        alignItems: "center",
+        alignItems: "start",
+        background: (theme) => theme.palette.background.darker,
       }}
     >
       <Card>

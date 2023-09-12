@@ -53,10 +53,6 @@ const RecipeDetailsPage = () => {
   const [loginDialogContent, setLoginDialogContent] = useState<string>("");
   const [likeIsLoading, setLikeIsLoading] = useState<boolean>(false);
   const [pdfIsLoading, setPdfIsLoading] = useState<boolean>(false);
-  //
-  // if (recipe && user) {
-  //   console.log(recipe.likes.some((like) => like.creator === user.userId));
-  // }
 
   const {
     register,
@@ -294,7 +290,6 @@ const RecipeDetailsPage = () => {
               sx={{
                 my: 3,
                 width: "100%",
-                height: "50vh",
                 color: (theme) => theme.palette.text.light,
               }}
             >
@@ -484,17 +479,17 @@ const RecipeDetailsPage = () => {
   );
 
   /* <Grid
-                                                                                                                                                <Grid
-                                                                                                                                                item
-                                                                                                                                                xs={12}
-                                                                                                                                                sx={{ mt: 2, borderTop: "1px solid #999" }}>
-                                                                                                                                                <Stack direction="row" alignItems="center">
-                                                                                                                                                <ChatIcon sx={{ mr: 2, fontSize: 32 }} />
-                                                                                                                                                <Typography variant="h4">{`Komentarze(${recipe.comments.length})`}</Typography>
-                                                                                                                                                </Stack>
-                                  
-                                                                                                                                                        </Grid>
-                                                                                                                                                    </Grid> */
+                                                                                                                                                    <Grid
+                                                                                                                                                    item
+                                                                                                                                                    xs={12}
+                                                                                                                                                    sx={{ mt: 2, borderTop: "1px solid #999" }}>
+                                                                                                                                                    <Stack direction="row" alignItems="center">
+                                                                                                                                                    <ChatIcon sx={{ mr: 2, fontSize: 32 }} />
+                                                                                                                                                    <Typography variant="h4">{`Komentarze(${recipe.comments.length})`}</Typography>
+                                                                                                                                                    </Stack>
+                                      
+                                                                                                                                                            </Grid>
+                                                                                                                                                        </Grid> */
 };
 export default RecipeDetailsPage;
 const Image = styled(Box)`
