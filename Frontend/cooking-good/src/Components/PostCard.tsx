@@ -17,8 +17,10 @@ import React from "react";
 import { IPost } from "../types/post-types";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import axios from "axios";
+import { useNotification } from "../hooks/notification-hook";
 
-const PostCard = ({ post, onDelete }: myProps) => {
+const PostCard = ({ post, onDelete, showMenu }: myProps) => {
+  const { displayNotification } = useNotification();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const openMenu = Boolean(anchorEl);
 
@@ -48,6 +50,31 @@ const PostCard = ({ post, onDelete }: myProps) => {
       });
     handleMenuClose();
   };
+  const handleSendNewsletter = () => {
+    axios
+      .post("http://localhost:8080/newsletter/send", {
+        content: post.description,
+        title: post.title,
+      })
+      .then((res) => {
+        console.log(res);
+        if (res.status === 200) {
+          displayNotification({
+            message: "Wysłano newsletter",
+            type: "success",
+            open: true,
+          });
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        displayNotification({
+          message: err.response.data.message,
+          type: "error",
+          open: true,
+        });
+      });
+  };
 
   return (
     <Paper>
@@ -64,28 +91,37 @@ const PostCard = ({ post, onDelete }: myProps) => {
             </Typography>
           }
           action={
-            <>
-              <IconButton aria-label="settings" onClick={handleMenuClick}>
-                <MoreVertIcon />
-              </IconButton>
-              <Menu
-                id="basic-menu"
-                anchorEl={anchorEl}
-                open={openMenu}
-                onClose={handleMenuClose}
-                MenuListProps={{
-                  "aria-labelledby": "basic-button",
-                }}
-              >
-                <MenuItem onClick={() => handlePostDelete(post.id)}>
-                  Usuń
-                </MenuItem>
-              </Menu>
-            </>
+            showMenu && (
+              <>
+                <IconButton aria-label="settings" onClick={handleMenuClick}>
+                  <MoreVertIcon />
+                </IconButton>
+                <Menu
+                  id="basic-menu"
+                  anchorEl={anchorEl}
+                  open={openMenu}
+                  onClose={handleMenuClose}
+                  MenuListProps={{
+                    "aria-labelledby": "basic-button",
+                  }}
+                >
+                  <MenuItem onClick={() => handlePostDelete(post.id)}>
+                    Usuń
+                  </MenuItem>
+                  <MenuItem onClick={handleSendNewsletter}>
+                    Wyślij jako newsletter
+                  </MenuItem>
+                </Menu>
+              </>
+            )
           }
-          subheader={`${dayjs(post.addetAt).format("DD.MM.YYYY")} - ${
-            post.creator.name
-          }`}
+          subheader={
+            showMenu
+              ? `${dayjs(post.addetAt).format("DD.MM.YYYY")} - ${
+                  post.creator.name
+                }`
+              : `${dayjs(post.addetAt).format("DD.MM.YYYY")}`
+          }
         />
         <CardMedia
           component="img"
@@ -118,4 +154,5 @@ export default PostCard;
 type myProps = {
   post: IPost;
   onDelete: (postId: string) => void;
+  showMenu: boolean;
 };

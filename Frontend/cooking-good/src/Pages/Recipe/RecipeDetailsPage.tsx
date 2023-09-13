@@ -334,7 +334,7 @@ const RecipeDetailsPage = () => {
                     Składniki
                   </Typography>
                   {recipe.ingredients.map((i, index) => (
-                    <>
+                    <Box key={index}>
                       <Box
                         display="flex"
                         justifyContent="space-between"
@@ -363,7 +363,7 @@ const RecipeDetailsPage = () => {
                         </Typography>
                       </Box>
                       <Divider />
-                    </>
+                    </Box>
                   ))}
                   <Stack alignItems="center">
                     <Button
@@ -413,6 +413,7 @@ const RecipeDetailsPage = () => {
           >
             {recipe.categories.map((c) => (
               <Button
+                key={c.id}
                 component={RouterLink}
                 to={"/category/" + c.id}
                 sx={{
@@ -479,17 +480,17 @@ const RecipeDetailsPage = () => {
   );
 
   /* <Grid
-                                                                                                                                                    <Grid
-                                                                                                                                                    item
-                                                                                                                                                    xs={12}
-                                                                                                                                                    sx={{ mt: 2, borderTop: "1px solid #999" }}>
-                                                                                                                                                    <Stack direction="row" alignItems="center">
-                                                                                                                                                    <ChatIcon sx={{ mr: 2, fontSize: 32 }} />
-                                                                                                                                                    <Typography variant="h4">{`Komentarze(${recipe.comments.length})`}</Typography>
-                                                                                                                                                    </Stack>
-                                      
-                                                                                                                                                            </Grid>
-                                                                                                                                                        </Grid> */
+                                                                                                                                                        <Grid
+                                                                                                                                                        item
+                                                                                                                                                        xs={12}
+                                                                                                                                                        sx={{ mt: 2, borderTop: "1px solid #999" }}>
+                                                                                                                                                        <Stack direction="row" alignItems="center">
+                                                                                                                                                        <ChatIcon sx={{ mr: 2, fontSize: 32 }} />
+                                                                                                                                                        <Typography variant="h4">{`Komentarze(${recipe.comments.length})`}</Typography>
+                                                                                                                                                        </Stack>
+                                          
+                                                                                                                                                                </Grid>
+                                                                                                                                                            </Grid> */
 };
 export default RecipeDetailsPage;
 const Image = styled(Box)`

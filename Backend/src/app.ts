@@ -8,6 +8,7 @@ import usersRoutes from "./routes/users-routes";
 import categoryRoutes from "./routes/category-routes";
 import reportRoutes from "./routes/reports-routes";
 import postRoutes from "./routes/posts-routes";
+import newsletterRoutes from "./routes/newsletter-router";
 import HttpError from "./models/http-error";
 import { CONNECTION_STRING } from "./config/configConsts";
 
@@ -32,6 +33,7 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use("/newsletter", newsletterRoutes);
 app.use("/users", usersRoutes);
 app.use("/category", categoryRoutes);
 app.use("/recipe", recipesRoutes);

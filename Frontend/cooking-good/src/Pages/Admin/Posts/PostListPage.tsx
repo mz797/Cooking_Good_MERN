@@ -6,8 +6,11 @@ import { IPost } from "../../../types/post-types";
 import { Masonry } from "@mui/lab";
 import { Box } from "@mui/system";
 import PostCard from "../../../Components/PostCard";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../store/store";
 
 const PostListPage = () => {
+  const user = useSelector((state: RootState) => state.auth.user);
   const [openCreateDialog, setOpenCreateDialog] = useState<boolean>(false);
   const [posts, setPosts] = useState<IPost[]>([]);
 
@@ -38,11 +41,16 @@ const PostListPage = () => {
           pt: 4,
         }}
       >
-        <Stack alignItems="end" sx={{ m: 1 }}>
-          <Button variant="contained" onClick={() => setOpenCreateDialog(true)}>
-            Dodaj ciekawostkę
-          </Button>
-        </Stack>
+        {user && user.role === "admin" && (
+          <Stack alignItems="end" sx={{ m: 1 }}>
+            <Button
+              variant="contained"
+              onClick={() => setOpenCreateDialog(true)}
+            >
+              Dodaj ciekawostkę
+            </Button>
+          </Stack>
+        )}
         <CreatePost
           open={openCreateDialog}
           onClose={() => setOpenCreateDialog(false)}
@@ -54,6 +62,7 @@ const PostListPage = () => {
               <PostCard
                 key={post.id}
                 post={post}
+                showMenu={!!user && user.role === "admin"}
                 onDelete={(postId) => {
                   setPosts((prev) => prev.filter((c) => c.id !== postId));
                 }}

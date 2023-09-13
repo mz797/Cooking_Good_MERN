@@ -4,8 +4,12 @@ import axios from "axios";
 import { RecipeType } from "../../types/recipe-types";
 import CategoryLinks from "../../Components/Category/CategoryLinks";
 import RecipeList from "../../Components/Recipes/Recipe/RecipeList";
+import { useSelector } from "react-redux";
+import { RootState } from "../../store/store";
+import NewsletterForm from "../../Components/NewsletterForm";
 
 const RecipesPage = () => {
+  const user = useSelector((state: RootState) => state.auth.user);
   const [recipeList, setRecipeList] = useState<RecipeType[] | []>([]);
   useEffect(() => {
     axios.get("http://localhost:8080/recipe/").then((res) => {
@@ -67,7 +71,7 @@ const RecipesPage = () => {
           background: (theme) => theme.palette.background.darker,
         }}
       >
-        <Container sx={{ mb: 4, mt: 4, p: 0, py: 1, pb: 5 }} maxWidth={"xl"}>
+        <Container sx={{ mt: 4, p: 0, py: 1, pb: 5 }} maxWidth={"xl"}>
           <RecipeList
             title="Najbardziej lubiane"
             recipes={recipeList
@@ -81,6 +85,7 @@ const RecipesPage = () => {
           />
         </Container>
       </Box>
+      <NewsletterForm email={!!user ? user.email : undefined} />
     </>
   );
 };

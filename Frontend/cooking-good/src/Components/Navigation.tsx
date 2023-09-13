@@ -90,6 +90,7 @@ const Navigation = () => {
           </Stack>
           <Stack spacing={3} direction="row" alignItems="center">
             <RouterLink to="/recipes">Przepisy</RouterLink>
+            <RouterLink to="/posts">Ciekawostki</RouterLink>
 
             {!token && (
               <>
@@ -121,9 +122,6 @@ const Navigation = () => {
                   </MenuItem>
                   <MenuItem component={MenuLink} to="/reports">
                     Zgłoszenia
-                  </MenuItem>
-                  <MenuItem component={MenuLink} to="/posts">
-                    Ciekawostki
                   </MenuItem>
                   <MenuItem component={MenuLink} to="/users">
                     Użytkownicy

@@ -70,6 +70,7 @@ export const notAuthRouter = createBrowserRouter([
         element: <RecipesByCategoryPage />,
       },
       { path: "reports", element: <ReportsPage /> },
+      { path: "posts", element: <PostListPage /> },
       { path: "user-profile/:userId", element: <UserProfilePage /> },
       { path: "users", element: <UsersPage /> },
       { path: "cart", element: <Cart /> },

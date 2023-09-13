@@ -5,28 +5,30 @@ import { useNotification } from "../../hooks/notification-hook";
 import { RootState } from "../../store/store";
 
 const Notification = () => {
-	const notification = useSelector((state: RootState) => state.notification);
+  const notification = useSelector((state: RootState) => state.notification);
 
-	const { clearMyNotification } = useNotification();
+  const { clearMyNotification } = useNotification();
 
-	const handleClose = (_: unknown, reason?: SnackbarCloseReason) => {
-		reason !== "clickaway" && clearMyNotification();
-	};
+  const handleClose = (_: unknown, reason?: SnackbarCloseReason) => {
+    reason !== "clickaway" && clearMyNotification();
+  };
 
-	return (
-		<Snackbar
-			open={notification.open}
-			autoHideDuration={4000}
-			onClose={handleClose}
-			anchorOrigin={{ vertical: "bottom", horizontal: "center" }}>
-			<Alert
-				variant="filled"
-				onClose={handleClose}
-				severity={notification.type}>
-				{notification.message}
-			</Alert>
-		</Snackbar>
-	);
+  return (
+    <Snackbar
+      open={notification.open}
+      autoHideDuration={4000}
+      onClose={handleClose}
+      anchorOrigin={{ vertical: "top", horizontal: "center" }}
+    >
+      <Alert
+        variant="filled"
+        onClose={handleClose}
+        severity={notification.type}
+      >
+        {notification.message}
+      </Alert>
+    </Snackbar>
+  );
 };
 
 export default Notification;
