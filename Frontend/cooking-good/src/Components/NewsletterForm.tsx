@@ -3,19 +3,32 @@ import {
   Button,
   Container,
   Stack,
+  TextField,
   Theme,
   Typography,
 } from "@mui/material";
 import React from "react";
 import axios from "axios";
 import { useNotification } from "../hooks/notification-hook";
+import { useForm } from "react-hook-form";
+
+type Inputs = {
+  email: string;
+};
 
 const NewsletterForm = ({ email }: myProps) => {
   const { displayNotification } = useNotification();
-  const handleSignToNewsletter = () => {
-    if (email) {
+
+  const {
+    reset,
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<Inputs>({ defaultValues: { email: email || "" } });
+  const handleSignToNewsletter = (data: Inputs) => {
+    if (data.email) {
       axios
-        .post("http://localhost:8080/newsletter", { email: email })
+        .post("http://localhost:8080/newsletter", { email: data.email })
         .then((res) => {
           if (res.status === 201) {
             displayNotification({
@@ -23,6 +36,7 @@ const NewsletterForm = ({ email }: myProps) => {
               type: "success",
               open: true,
             });
+            reset();
           } else {
             displayNotification({
               message: res.data
@@ -71,24 +85,59 @@ const NewsletterForm = ({ email }: myProps) => {
               color: (theme: Theme) => theme.palette.text.light,
             }}
           >
-            Chcesz być na bieżąco? Zapisz się na nasz newsletter!
+            Chcesz być na bieżąco? Zapisz się na nasz NEWSLETTER!
           </Typography>
-          <Button
-            variant="contained"
-            sx={{
-              width: "50%",
-              fontSize: 16,
-              background: (theme: Theme) => theme.palette.background.light,
-              color: (theme: Theme) => theme.palette.primary.main,
-              "&:hover": {
-                background: (theme: Theme) => theme.palette.background.light,
-                color: (theme: Theme) => theme.palette.primary.main,
-              },
-            }}
-            onClick={handleSignToNewsletter}
-          >
-            Zapisz się
-          </Button>
+          <form onSubmit={handleSubmit(handleSignToNewsletter)}>
+            <Stack direction="row" alignItems="start" spacing={2}>
+              <TextField
+                sx={{
+                  ".MuiInputLabel-root": { color: "#fff" },
+                  ".MuiInputLabel-root.Mui-focused": { color: "#fff" },
+                  ".MuiOutlinedInput-root": {
+                    color: "#fff",
+                    "& fieldset": {
+                      borderColor: "white",
+                    },
+                    "&:hover fieldset": {
+                      borderColor: "white",
+                    },
+                    "&.Mui-focused fieldset": {
+                      borderColor: "white",
+                    },
+                  },
+                }}
+                label="E-mail*"
+                {...register("email", {
+                  required: "To pole jest obowiązkowe",
+                  pattern: {
+                    value: /\S+@\S+\.\S+/,
+                    message: "Wprowadz poprawny e-mail",
+                  },
+                })}
+                error={!!errors.email}
+                helperText={!!errors.email && errors.email.message}
+              />
+
+              <Button
+                type="submit"
+                variant="contained"
+                sx={{
+                  width: "50%",
+                  height: 56,
+                  fontSize: 16,
+                  background: (theme: Theme) => theme.palette.background.light,
+                  color: (theme: Theme) => theme.palette.primary.main,
+                  "&:hover": {
+                    background: (theme: Theme) =>
+                      theme.palette.background.light,
+                    color: (theme: Theme) => theme.palette.primary.main,
+                  },
+                }}
+              >
+                Zapisz się
+              </Button>
+            </Stack>
+          </form>
         </Stack>
       </Container>
     </Box>

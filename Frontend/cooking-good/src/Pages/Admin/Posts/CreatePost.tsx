@@ -45,7 +45,6 @@ const CreatePost = ({ open, onClose, onSave }: myProps) => {
       body: formData,
       headers: { Authorization: "Bearer " + token },
     }).then((res) => {
-      console.log(res);
       reset();
       onSave();
       onClose();
@@ -61,7 +60,6 @@ const CreatePost = ({ open, onClose, onSave }: myProps) => {
       <form onSubmit={handleSubmit(onSubmit)}>
         <DialogContent>
           <TextField
-            autoFocus
             error={!!errors.title}
             helperText={errors.title?.message}
             label="Tytuł*"
