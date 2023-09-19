@@ -16,6 +16,7 @@ import UsersPage from "../Pages/Admin/Users/UsersPage";
 import UserProfilePage from "../Pages/User/UserProfilePage";
 import ActivateAccount from "../Pages/Auth/ActivateAccount";
 import PostListPage from "../Pages/Admin/Posts/PostListPage";
+import RecipesListPage from "../Pages/Recipe/RecipesListPage";
 
 export const router = createBrowserRouter([
   {
@@ -40,6 +41,10 @@ export const router = createBrowserRouter([
       { path: "posts", element: <PostListPage /> },
 
       {
+        path: "recipes-list",
+        element: <RecipesListPage />,
+      },
+      {
         path: "recipes",
         element: <RecipesPage />,
       },
@@ -61,6 +66,10 @@ export const notAuthRouter = createBrowserRouter([
       { path: "auth/login", element: <Login /> },
       { path: "auth/signup", element: <Signup /> },
       { path: "user/activate/:token", element: <ActivateAccount /> },
+      {
+        path: "recipes-list",
+        element: <RecipesListPage />,
+      },
       {
         path: "recipes",
         element: <RecipesPage />,

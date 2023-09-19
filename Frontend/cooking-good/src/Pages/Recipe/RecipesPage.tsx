@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Box, Container, Typography } from "@mui/material";
+import { Box, Button, Container, Stack, Typography } from "@mui/material";
 import axios from "axios";
 import { RecipeType } from "../../types/recipe-types";
 import CategoryLinks from "../../Components/Category/CategoryLinks";
@@ -7,10 +7,14 @@ import RecipeList from "../../Components/Recipes/Recipe/RecipeList";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import NewsletterForm from "../../Components/NewsletterForm";
+import EastIcon from "@mui/icons-material/East";
+import { Link } from "react-router-dom";
 
 const RecipesPage = () => {
   const user = useSelector((state: RootState) => state.auth.user);
+
   const [recipeList, setRecipeList] = useState<RecipeType[] | []>([]);
+
   useEffect(() => {
     axios.get("http://localhost:8080/recipe/").then((res) => {
       setRecipeList(res.data.recipes);
@@ -45,6 +49,17 @@ const RecipesPage = () => {
             emptyStateMessage={`Brak przepisów`}
             titleStyles={{ my: 4 }}
           />
+          {recipeList.length > 0 && (
+            <Stack alignItems="end">
+              <Button
+                endIcon={<EastIcon />}
+                component={Link}
+                to="/recipes-list"
+              >
+                Zobacz wszystkie
+              </Button>
+            </Stack>
+          )}
         </Container>
       </Box>
       <Box

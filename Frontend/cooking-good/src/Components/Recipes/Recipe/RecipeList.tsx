@@ -13,16 +13,18 @@ const RecipeList = ({
 }: myProps) => {
   return (
     <Box>
-      <Typography
-        variant="h4"
-        sx={{
-          textAlign: "center",
-          color: (theme) => theme.palette.success.main,
-          ...titleStyles,
-        }}
-      >
-        {title}
-      </Typography>
+      {!!title && (
+        <Typography
+          variant="h4"
+          sx={{
+            textAlign: "center",
+            color: (theme) => theme.palette.success.main,
+            ...titleStyles,
+          }}
+        >
+          {title}
+        </Typography>
+      )}
       {divider && <Divider sx={{ my: 3 }} />}
       <Stack
         direction="row"
@@ -41,7 +43,7 @@ const RecipeList = ({
 export default RecipeList;
 
 type myProps = {
-  title: string;
+  title?: string;
   recipes: RecipeType[];
   emptyStateMessage: string;
   divider?: boolean;

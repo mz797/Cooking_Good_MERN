@@ -55,10 +55,11 @@ export const getAllRecipes = (
 ) => {
   Recipe.find()
     .populate("creator", "name")
+    .populate("categories", "name")
     .then((recipes) => {
       res.status(200).json({
         message: "Pobrano listę przepisów",
-        recipes: recipes,
+        recipes: recipes.map((recipe) => recipe.toObject({ getters: true })),
       });
     })
     .catch((err) => {

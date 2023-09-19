@@ -87,10 +87,19 @@ const NewsletterForm = ({ email }: myProps) => {
           >
             Chcesz być na bieżąco? Zapisz się na nasz NEWSLETTER!
           </Typography>
-          <form onSubmit={handleSubmit(handleSignToNewsletter)}>
-            <Stack direction="row" alignItems="start" spacing={2}>
+          <form
+            onSubmit={handleSubmit(handleSignToNewsletter)}
+            style={{ width: "100%" }}
+          >
+            <Stack
+              direction="row"
+              alignItems="start"
+              justifyContent="center"
+              spacing={2}
+            >
               <TextField
                 sx={{
+                  width: "25%",
                   ".MuiInputLabel-root": { color: "#fff" },
                   ".MuiInputLabel-root.Mui-focused": { color: "#fff" },
                   ".MuiOutlinedInput-root": {
@@ -122,7 +131,7 @@ const NewsletterForm = ({ email }: myProps) => {
                 type="submit"
                 variant="contained"
                 sx={{
-                  width: "50%",
+                  width: "25%",
                   height: 56,
                   fontSize: 16,
                   background: (theme: Theme) => theme.palette.background.light,
