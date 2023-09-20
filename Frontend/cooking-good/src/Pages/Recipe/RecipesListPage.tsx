@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { RecipeType } from "../../types/recipe-types";
 import axios from "axios";
 import { ICategory } from "../../types/category-types";
-import RecipeFilters from "../../Components/Recipes/Recipe/RecipeFilters";
+import RecipeFilters from "../../Components/Recipes/Recipe/Filters/RecipeFilters";
 
 const RecipesListPage = () => {
   const [recipeList, setRecipeList] = useState<RecipeType[] | []>([]);
