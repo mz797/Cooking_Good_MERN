@@ -17,6 +17,7 @@ const userSchema = new Schema({
   },
   role: {
     type: String,
+    required: true,
   },
   status: {
     type: String,
@@ -28,6 +29,12 @@ const userSchema = new Schema({
   description: {
     type: String,
   },
+  shoppingList: [
+    {
+      name: { type: String, required: true },
+      amount: { type: String, required: true },
+    },
+  ],
   recipes: [{ type: mongoose.Types.ObjectId, required: true, ref: "Recipe" }],
   favorites: [{ type: mongoose.Types.ObjectId, required: true, ref: "Recipe" }],
 });

@@ -58,7 +58,7 @@ const CategoriesPage = () => {
     <Container sx={{ mt: 4 }}>
       <Stack alignItems="end" sx={{ m: 1 }}>
         <Button
-          sx={{ alignSelf: "end" }}
+          sx={{ color: (theme) => theme.palette.text.light, alignSelf: "end" }}
           variant="contained"
           onClick={handleOpenAddCategory}
         >

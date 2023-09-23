@@ -23,6 +23,7 @@ interface IUser extends Document {
   password: string;
   role?: string;
   recipes: mongoose.Types.ObjectId[];
+  shoppingList: { name: string; amount: string }[];
 }
 
 interface IRecipe extends Document {
@@ -44,6 +45,7 @@ interface IRecipe extends Document {
   comments: { id: string; content: string; creator: any }[];
   likes: { creator: any }[];
   visitCount: number;
+  commentImages: { image: string; creator: any; addedAt: Date }[];
 }
 
 type RequestParams = { recipeId: string };
@@ -85,7 +87,8 @@ export const getSingleRecipe = async (
     recipe = await Recipe.findById(id)
       .populate("creator", "name image")
       .populate("categories")
-      .populate("comments.creator");
+      .populate("comments.creator")
+      .populate("commentImages.creator");
   } catch (err) {
     console.log("getSingleRecipe", err);
     const error = new HttpError("Błąd podczas wyszukiwania przepisu!", 500);
@@ -130,7 +133,8 @@ export const addRate = async (
     recipe = await Recipe.findById(id)
       .populate("creator", "name image")
       .populate("categories")
-      .populate("comments.creator", "name image");
+      .populate("comments.creator")
+      .populate("commentImages.creator");
   } catch (err) {
     console.log("addRate", err);
     const error = new HttpError(
@@ -199,8 +203,10 @@ export const addComment = async (
 
   try {
     recipe = await Recipe.findById(id)
-      .populate("creator", "name")
-      .populate("categories");
+      .populate("creator", "name image")
+      .populate("categories")
+      .populate("comments.creator")
+      .populate("commentImages.creator");
   } catch (err) {
     console.log("addComent", err);
     const error = new HttpError(
@@ -259,7 +265,11 @@ export const removeComment = async (
   let reports: any[];
 
   try {
-    recipe = await Recipe.findById(recipeId);
+    recipe = await Recipe.findById(recipeId)
+      .populate("creator", "name image")
+      .populate("categories")
+      .populate("comments.creator")
+      .populate("commentImages.creator");
   } catch (err) {
     console.log("removeComment", err);
 
@@ -359,7 +369,8 @@ export const addRecipe = async (
     creator,
     visitCount: 0,
     likes: [],
-    coments: [],
+    comments: [],
+    commentImages: [],
     rates: [],
     addedAt: new Date(),
   });
@@ -655,4 +666,146 @@ export const downloadRecipe = async (
   //
   // const file = fs.createReadStream(recipePath);
   // file.pipe(res);
+};
+
+export const addCommentImage = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const id: string = req.params.recipeId;
+
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    const error = new HttpError("Niepoprawne dane dodawania przepisu.", 422);
+    throw error;
+  }
+  const { creator } = req.body;
+
+  let recipe: IRecipe | null;
+
+  try {
+    recipe = await Recipe.findById(id)
+      .populate("comments.creator.name")
+      .populate("creator", "name image")
+      .populate("categories", "name");
+  } catch (err) {
+    console.log("addCommentImage", err);
+    const error = new HttpError(
+      "Nie udało się znależć przepisu do dodania zdjęcia!",
+      500
+    );
+    return next(error);
+  }
+
+  if (!recipe) {
+    console.log("addCommentImage");
+    const error = new HttpError(
+      "Nie udało się znależć przepisu do dodania zdjęcia!",
+      404
+    );
+    return next(error);
+  }
+  if (req.file)
+    recipe.commentImages.push({
+      image: req.file.path.replace("\\", "/"),
+      creator,
+      addedAt: new Date(),
+    });
+
+  try {
+    await recipe.save();
+  } catch (err) {
+    console.log("addCommentImages save", err);
+    const error = new HttpError("Dodanie zdjęcia się nie powiodło.", 500);
+    return next(error);
+  }
+
+  let updatedRecipe;
+  try {
+    updatedRecipe = await recipe.populate("commentImages.creator");
+  } catch (err) {
+    console.log(err);
+
+    const error = new HttpError(
+      "Nie udało się pobrać przepisu po edycji.",
+      500
+    );
+    return next(error);
+  }
+
+  res.status(200).json({
+    message: "Dodano zdjęcie",
+    recipe: updatedRecipe.toObject({ getters: true }),
+  });
+};
+
+export const deleteCommentImage = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const recipeId: string = req.params.recipeId;
+  const imageId: string = req.params.imageId;
+
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    const error = new HttpError("Niepoprawne dane dodawania przepisu.", 422);
+    throw error;
+  }
+
+  let recipe: IRecipe | null;
+
+  try {
+    recipe = await Recipe.findById(recipeId)
+      .populate("comments.creator.name")
+      .populate("creator", "name image")
+      .populate("categories", "name");
+  } catch (err) {
+    console.log("deleteCommentImage", err);
+    const error = new HttpError("Nie udało się znależć przepisu!", 500);
+    return next(error);
+  }
+
+  if (!recipe) {
+    console.log("deleteCommentImage");
+    const error = new HttpError(
+      "Nie udało się znależć przepisu do dodania zdjęcia!",
+      404
+    );
+    return next(error);
+  }
+
+  console.log();
+  recipe.commentImages = recipe.commentImages.filter(
+    (image) => image.toString() !== imageId.toString()
+  );
+
+  try {
+    await recipe.save();
+  } catch (err) {
+    console.log("deleteCommentImage save", err);
+    const error = new HttpError("Usunięcie zdjęcia się nie powiodło.", 500);
+    return next(error);
+  }
+
+  let updatedRecipe;
+  try {
+    updatedRecipe = await recipe.populate("commentImages.creator");
+  } catch (err) {
+    console.log(err);
+
+    const error = new HttpError(
+      "Nie udało się pobrać przepisu po edycji.",
+      500
+    );
+    return next(error);
+  }
+
+  res.status(200).json({
+    message: "Usunięto zdjęcie",
+    recipe: updatedRecipe.toObject({ getters: true }),
+  });
 };

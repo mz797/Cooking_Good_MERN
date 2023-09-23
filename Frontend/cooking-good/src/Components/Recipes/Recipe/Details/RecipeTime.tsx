@@ -1,4 +1,4 @@
-import { timeMarks } from "../AddRecipe/AddRecipeBasic";
+import { timeMarks } from "../../AddRecipe/AddRecipeBasic";
 
 import React from "react";
 import TimelapseIcon from "@mui/icons-material/Timelapse";

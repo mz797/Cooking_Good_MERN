@@ -1,3 +1,4 @@
+import { useForm } from "react-hook-form";
 import {
   Button,
   Dialog,
@@ -5,10 +6,9 @@ import {
   DialogContent,
   DialogTitle,
 } from "@mui/material";
-import { useForm } from "react-hook-form";
-import ImageUpload from "../common/ImageUpload";
+import ImageUpload from "../../common/ImageUpload";
 
-const UpdateUserImage = ({ open, onSave, onClose }: myProps) => {
+const AddPhotoDialog = ({ open, onSave, onClose }: myProps) => {
   const {
     register,
     setValue,
@@ -35,7 +35,7 @@ const UpdateUserImage = ({ open, onSave, onClose }: myProps) => {
 
   return (
     <Dialog open={open} onClose={onClose}>
-      <DialogTitle>Edytuj zdjęcie profilowe</DialogTitle>
+      <DialogTitle>Dodaj zdjęcie</DialogTitle>
       <form onSubmit={handleSubmit(onSubmit)}>
         <DialogContent sx={{ display: "flex", justifyContent: "center" }}>
           <ImageUpload
@@ -72,12 +72,13 @@ const UpdateUserImage = ({ open, onSave, onClose }: myProps) => {
     </Dialog>
   );
 };
-export default UpdateUserImage;
+export default AddPhotoDialog;
 type myProps = {
   open: boolean;
   onSave: (formData: FormData) => void;
   onClose: () => void;
 };
+
 type Inputs = {
   image: File | undefined;
 };

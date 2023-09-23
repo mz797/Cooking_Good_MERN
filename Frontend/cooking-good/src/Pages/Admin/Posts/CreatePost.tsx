@@ -128,7 +128,11 @@ const CreatePost = ({ open, onClose, onSave }: myProps) => {
         </DialogContent>
         <DialogActions>
           <Button onClick={onClose}>Anuluj</Button>
-          <Button variant="contained" type="submit">
+          <Button
+            variant="contained"
+            type="submit"
+            sx={{ color: (theme) => theme.palette.text.light }}
+          >
             Zapisz
           </Button>
         </DialogActions>

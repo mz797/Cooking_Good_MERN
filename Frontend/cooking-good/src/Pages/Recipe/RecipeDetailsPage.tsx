@@ -2,11 +2,15 @@ import {
   Avatar,
   Box,
   Button,
+  Checkbox,
   CircularProgress,
   Container,
   Divider,
   Grid,
   List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
   Paper,
   Stack,
   styled,
@@ -20,17 +24,21 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { RecipeType } from "../../types/recipe-types";
 import { RootState } from "../../store/store";
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
-import RateDialog from "../../Components/Recipes/Recipe/RateDialog";
+import RateDialog from "../../Components/Recipes/Recipe/Details/RateDialog";
 import DescriptionIcon from "@mui/icons-material/Description";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 
 import { RouterLink } from "../../Components/Navigation";
 import { useForm } from "react-hook-form";
-import Comment from "../../Components/Recipes/Recipe/Comment";
+import Comment from "../../Components/Recipes/Recipe/Details/Comment";
 import RecipeImage from "../../Components/Recipes/Recipe/RecipeImage";
 import LoginDialog from "../../Components/Auth/LoginDialog";
 import StarIcon from "@mui/icons-material/Star";
+import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
+import AddPhotoDialog from "../../Components/Recipes/Recipe/AddPhotoDialog";
+import CommentImage from "../../Components/Recipes/Recipe/Details/CommentImage";
+import { Masonry } from "@mui/lab";
 
 type CommentType = {
   content: string;
@@ -54,6 +62,12 @@ const RecipeDetailsPage = () => {
   const [likeIsLoading, setLikeIsLoading] = useState<boolean>(false);
   const [pdfIsLoading, setPdfIsLoading] = useState<boolean>(false);
 
+  const [selectedIngredients, setSelectedIngredients] = useState<
+    { name: string; amount: string }[] | []
+  >([]);
+
+  const [openAddPhoto, setOpenAddPhoto] = useState<boolean>(false);
+
   const {
     register,
     handleSubmit,
@@ -65,7 +79,7 @@ const RecipeDetailsPage = () => {
     axios.get(`http://localhost:8080/recipe/${id}`).then((res) => {
       setRecipe(res.data.recipe);
     });
-  }, []);
+  }, [id]);
 
   const handleDeleteRecipe = async () => {
     axios
@@ -147,6 +161,13 @@ const RecipeDetailsPage = () => {
   };
 
   const onCommentSubmit = async (data: CommentType) => {
+    if (!token) {
+      setLoginDialogContent(
+        "Jedynie zalogowani użytkownicy mogą dodać komentarz."
+      );
+      setLoginDialogOpen(true);
+      return;
+    }
     try {
       const response = await axios.put(
         `http://localhost:8080/recipe/comment/${id}`,
@@ -186,6 +207,77 @@ const RecipeDetailsPage = () => {
     });
   };
 
+  const handleSaveCommentImage = async (formData: FormData) => {
+    if (user) {
+      formData.append("creator", user.userId);
+    }
+    const res = await axios.put(
+      `http://localhost:8080/recipe/comment-image/${recipe?.id}`,
+      formData,
+      { headers: { Authorization: "Bearer " + token } }
+    );
+    if (res.statusText === "OK") {
+      setRecipe(res.data.recipe);
+    }
+  };
+  const handleImageDelete = async (id: string) => {
+    const res = await axios.delete(
+      `http://localhost:8080/recipe/comment-image/${recipe?.id}/${id}`,
+      { headers: { Authorization: "Bearer " + token } }
+    );
+    if (res.statusText === "OK") {
+      setRecipe(res.data.recipe);
+    }
+  };
+
+  const handleAddIngredients = async () => {
+    if (!token) {
+      setLoginDialogContent(
+        "Jedynie zalogowani użytkownicy mogą dodać składniki do listy zakupów."
+      );
+      setLoginDialogOpen(true);
+      return;
+    }
+    //shopping-list
+    else {
+      console.log("ingredients", selectedIngredients);
+      try {
+        const response = await axios.put(
+          `http://localhost:8080/users/shopping-list/${user?.userId}`,
+          {
+            ingredients: selectedIngredients,
+          },
+          { headers: { Authorization: "Bearer " + token } }
+        );
+        if (response.status === 200) {
+          setSelectedIngredients([]);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    }
+  };
+
+  const handleIngredientSelect = (ingredient: {
+    name: string;
+    amount: string;
+  }) => {
+    if (
+      selectedIngredients.find(
+        (ing) =>
+          ing.name === ingredient.name && ing.amount === ingredient.amount
+      )
+    ) {
+      setSelectedIngredients((prev) =>
+        prev.filter(
+          (ing) =>
+            !(ing.name === ingredient.name && ing.amount === ingredient.amount)
+        )
+      );
+    } else {
+      setSelectedIngredients((prev) => [...prev, ingredient]);
+    }
+  };
   return (
     <>
       <Container sx={{ my: 4 }}>
@@ -198,6 +290,11 @@ const RecipeDetailsPage = () => {
             onClose={() => setOpenRateDialog(false)}
           />
         )}
+        <AddPhotoDialog
+          open={openAddPhoto}
+          onSave={handleSaveCommentImage}
+          onClose={() => setOpenAddPhoto(false)}
+        />
         <LoginDialog
           open={loginDialogOpen}
           onClose={() => setLoginDialogOpen(false)}
@@ -313,7 +410,7 @@ const RecipeDetailsPage = () => {
               </Typography>
             </Box>
             <Grid container spacing={3}>
-              <Grid item xs={12} md={5}>
+              <Grid item xs={12} md={5.5}>
                 <Paper
                   sx={{
                     pb: 2,
@@ -334,39 +431,64 @@ const RecipeDetailsPage = () => {
                     Składniki
                   </Typography>
                   {recipe.ingredients.map((i, index) => (
-                    <Box key={index}>
-                      <Box
-                        display="flex"
-                        justifyContent="space-between"
-                        alignItems="flex-end"
-                        sx={{ px: 1, py: 0.25 }}
-                        key={index}
-                      >
-                        <Typography
-                          sx={{
-                            fontSize: 20,
-                            textTransform: "uppercase",
-                            letterSpacing: 1,
-                            maxWidth: "70%",
-                          }}
+                    <>
+                      <ListItem key={index} sx={{ p: 0 }}>
+                        <ListItemButton
+                          onClick={() =>
+                            handleIngredientSelect({
+                              name: i.name,
+                              amount: i.amount,
+                            })
+                          }
                         >
-                          {i.name}
-                        </Typography>
-                        <Typography
-                          sx={{
-                            fontSize: 20,
-                            maxWidth: "30%",
-                            textAlign: "end",
-                          }}
-                        >
-                          {i.amount}
-                        </Typography>
-                      </Box>
+                          <ListItemIcon>
+                            <Checkbox
+                              checked={
+                                !!selectedIngredients.find(
+                                  (ing) => ing.name === i.name
+                                )
+                              }
+                            />
+                          </ListItemIcon>
+                          <Stack
+                            direction="row"
+                            justifyContent="space-between"
+                            alignItems="center"
+                            sx={{
+                              px: 1,
+                              py: 0.25,
+                              width: "100%",
+                            }}
+                            key={index}
+                          >
+                            <Typography
+                              sx={{
+                                fontSize: { xs: 16, sm: 20 },
+                                textTransform: "uppercase",
+                                letterSpacing: { sm: 1 },
+                                maxWidth: "70%",
+                              }}
+                            >
+                              {i.name}
+                            </Typography>
+                            <Typography
+                              sx={{
+                                fontSize: { xs: 16, sm: 20 },
+                                maxWidth: "30%",
+                                textAlign: "end",
+                              }}
+                            >
+                              {i.amount}
+                            </Typography>
+                          </Stack>
+                        </ListItemButton>
+                      </ListItem>
                       <Divider />
-                    </Box>
+                    </>
                   ))}
                   <Stack alignItems="center">
                     <Button
+                      onClick={handleAddIngredients}
                       variant="contained"
                       sx={{
                         mt: 2,
@@ -378,8 +500,33 @@ const RecipeDetailsPage = () => {
                     </Button>
                   </Stack>
                 </Paper>
+                <Paper
+                  sx={{
+                    my: 1,
+                    p: 2,
+                    background: (theme) => theme.palette.background.darker,
+                  }}
+                >
+                  <Stack alignItems="center">
+                    <Typography variant="h5" sx={{ textAlign: "center" }}>
+                      Udało Ci się odtworzyć przepis? Pochwal się!
+                    </Typography>
+                    <Button
+                      type="submit"
+                      variant="contained"
+                      sx={{
+                        mt: 1,
+                        color: (theme) => theme.palette.text.light,
+                      }}
+                      endIcon={<AddPhotoAlternateIcon />}
+                      onClick={() => setOpenAddPhoto(true)}
+                    >
+                      Dodaj zdjęcie
+                    </Button>
+                  </Stack>
+                </Paper>
               </Grid>
-              <Grid item xs={12} md={7}>
+              <Grid item xs={12} md={6.5}>
                 <Typography
                   variant="h4"
                   sx={{
@@ -432,65 +579,88 @@ const RecipeDetailsPage = () => {
         </Box>
       )}
       {!!recipe && (
-        <Container sx={{ py: 4 }}>
-          <Typography
-            variant="h4"
-            sx={{
-              textAlign: "center",
-            }}
-          >{`Komentarze(${recipe.comments.length})`}</Typography>
-          <List>
-            {recipe.comments.map((comment, index) => (
-              <Box key={comment.id}>
-                <Comment comment={comment} recipe={recipe} />
-                {index !== recipe.comments.length - 1 && <Divider />}
-              </Box>
-            ))}
-          </List>
-          <form
-            onSubmit={handleSubmit(onCommentSubmit)}
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "end",
-            }}
-          >
-            <TextField
-              multiline
-              rows={2}
-              sx={{ width: "100%" }}
-              label="Napisz komentarz"
-              {...register("content")}
-            />
-
-            <Button
-              type="submit"
-              variant="contained"
+        <>
+          {recipe.commentImages.length > 0 && (
+            <Container sx={{ py: 4 }}>
+              <Typography
+                variant="h4"
+                sx={{
+                  py: 2,
+                  textAlign: "center",
+                }}
+              >{`Wasze zdjęcia(${recipe.commentImages.length})`}</Typography>
+              <Masonry columns={{ xs: 1, sm: 2, md: 3 }}>
+                {recipe.commentImages.map((comment, index) => (
+                  <Box key={comment.id}>
+                    <CommentImage
+                      commentImage={comment}
+                      onDelete={() => handleImageDelete(comment.id)}
+                    />
+                  </Box>
+                ))}
+              </Masonry>
+            </Container>
+          )}
+          <Container sx={{ py: 4 }}>
+            <Typography
+              variant="h4"
               sx={{
-                mt: 1,
-                color: (theme) => theme.palette.text.light,
+                textAlign: "center",
+              }}
+            >{`Komentarze(${recipe.comments.length})`}</Typography>
+            <List>
+              {recipe.comments.map((comment, index) => (
+                <Box key={comment.id}>
+                  <Comment comment={comment} recipe={recipe} />
+                  {index !== recipe.comments.length - 1 && <Divider />}
+                </Box>
+              ))}
+            </List>
+            <form
+              onSubmit={handleSubmit(onCommentSubmit)}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "end",
               }}
             >
-              Dodaj komentarz
-            </Button>
-          </form>
-        </Container>
+              <TextField
+                multiline
+                rows={2}
+                sx={{ width: "100%" }}
+                label="Napisz komentarz"
+                {...register("content")}
+              />
+
+              <Button
+                type="submit"
+                variant="contained"
+                sx={{
+                  mt: 1,
+                  color: (theme) => theme.palette.text.light,
+                }}
+              >
+                Dodaj komentarz
+              </Button>
+            </form>
+          </Container>
+        </>
       )}
     </>
   );
 
   /* <Grid
-                                                                                                                                                        <Grid
-                                                                                                                                                        item
-                                                                                                                                                        xs={12}
-                                                                                                                                                        sx={{ mt: 2, borderTop: "1px solid #999" }}>
-                                                                                                                                                        <Stack direction="row" alignItems="center">
-                                                                                                                                                        <ChatIcon sx={{ mr: 2, fontSize: 32 }} />
-                                                                                                                                                        <Typography variant="h4">{`Komentarze(${recipe.comments.length})`}</Typography>
-                                                                                                                                                        </Stack>
-                                          
-                                                                                                                                                                </Grid>
-                                                                                                                                                            </Grid> */
+                                                                                                                                                                                                                                                                                                                                            <Grid
+                                                                                                                                                                                                                                                                                                                                            item
+                                                                                                                                                                                                                                                                                                                                            xs={12}
+                                                                                                                                                                                                                                                                                                                                            sx={{ mt: 2, borderTop: "1px solid #999" }}>
+                                                                                                                                                                                                                                                                                                                                            <Stack direction="row" alignItems="center">
+                                                                                                                                                                                                                                                                                                                                            <ChatIcon sx={{ mr: 2, fontSize: 32 }} />
+                                                                                                                                                                                                                                                                                                                                            <Typography variant="h4">{`Komentarze(${recipe.comments.length})`}</Typography>
+                                                                                                                                                                                                                                                                                                                                            </Stack>
+                                                                                              
+                                                                                                                                                                                                                                                                                                                                                    </Grid>
+                                                                                                                                                                                                                                                                                                                                                </Grid> */
 };
 export default RecipeDetailsPage;
 const Image = styled(Box)`

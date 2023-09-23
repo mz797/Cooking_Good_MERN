@@ -4,7 +4,9 @@ import { check } from "express-validator";
 import {
   activateUser,
   addToFavorites,
+  addToShoppingList,
   deleteFromFavorites,
+  deleteFromShoppingList,
   getSingleUser,
   getUsers,
   login,
@@ -28,6 +30,9 @@ router.put("/status/:userId", updateUserStatus);
 router.put("/role/:userId", updateUserRole);
 router.put("/image/:userId", fileUpload.single("image"), updateUserImage);
 router.put("/description/:userId", updateUserDescription);
+
+router.put("/shopping-list/:userId", addToShoppingList);
+router.delete("/shopping-list/:userId", deleteFromShoppingList);
 
 router.post(
   "/signup",

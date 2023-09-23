@@ -44,6 +44,7 @@ const PostListPage = () => {
         {user && user.role === "admin" && (
           <Stack alignItems="end" sx={{ m: 1 }}>
             <Button
+              sx={{ color: (theme) => theme.palette.text.light }}
               variant="contained"
               onClick={() => setOpenCreateDialog(true)}
             >

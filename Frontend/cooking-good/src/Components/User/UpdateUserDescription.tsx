@@ -46,7 +46,11 @@ const UpdateUserDescription = ({
           <Button variant={"outlined"} type={"button"} onClick={onClose}>
             Anuluj
           </Button>
-          <Button variant={"contained"} type={"submit"}>
+          <Button
+            variant={"contained"}
+            type={"submit"}
+            sx={{ color: (theme) => theme.palette.text.light }}
+          >
             Zapisz
           </Button>
         </DialogActions>

@@ -150,7 +150,11 @@ const Signup = () => {
                   <Button
                     disabled={!!Object.keys(errors).length}
                     variant="contained"
-                    sx={{ mt: 2, width: "100%" }}
+                    sx={{
+                      mt: 2,
+                      width: "100%",
+                      color: (theme) => theme.palette.text.light,
+                    }}
                     type="submit"
                   >
                     Zarejestruj się

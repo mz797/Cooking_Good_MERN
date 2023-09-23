@@ -2,6 +2,7 @@ import {
   Avatar,
   Badge,
   Box,
+  Button,
   IconButton,
   Stack,
   Typography,
@@ -20,6 +21,8 @@ import UpdateUserImage from "../../Components/User/UpdateUserImage";
 import DriveFileRenameOutlineIcon from "@mui/icons-material/DriveFileRenameOutline";
 import UpdateUserDescription from "../../Components/User/UpdateUserDescription";
 import RecipeList from "../../Components/Recipes/Recipe/RecipeList";
+import DescriptionIcon from "@mui/icons-material/Description";
+import ShoppingList from "../../Components/User/ShoppingList";
 
 const UserProfilePage = () => {
   const theme = useTheme();
@@ -30,6 +33,7 @@ const UserProfilePage = () => {
   const [openImage, setOpenImage] = useState(false);
   const [openDescription, setOpenDescription] = useState(false);
 
+  const [openShoppingList, setOpenShoppingList] = useState<boolean>(false);
   useEffect(() => {
     fetchUser();
   }, [userId]);
@@ -55,12 +59,33 @@ const UserProfilePage = () => {
 
   const handleSaveUserDescription = async (data: Inputs) => {
     const res = await axios.put(
-      `http://localhost:8080/users/description/${user?.id}`,
+      `http://localhost:8080/users/description/${auth?.user?.userId}`,
       data,
       { headers: { Authorization: "Bearer " + auth.token } }
     );
     if (res.statusText === "OK") {
       setUser(res.data.user);
+    }
+  };
+
+  const handleDeleteFromShoppingList = async (ingredients: string[]) => {
+    try {
+      const response = await axios.delete(
+        `http://localhost:8080/users/shopping-list/${auth?.user?.userId}`,
+        {
+          data: {
+            ingredients: ingredients,
+          },
+          headers: {
+            Authorization: "Bearer " + auth.token,
+          },
+        }
+      );
+      if (response.status === 200) {
+        setUser(response.data.user);
+      }
+    } catch (err) {
+      console.log(err);
     }
   };
 
@@ -79,6 +104,16 @@ const UserProfilePage = () => {
             onSave={handleSaveUserDescription}
             description={user.description}
           />
+          <ShoppingList
+            open={openShoppingList}
+            user={user}
+            onClose={() => {
+              setOpenShoppingList(false);
+            }}
+            onDelete={(ingredients) =>
+              handleDeleteFromShoppingList(ingredients)
+            }
+          />
           <Stack
             alignItems="center"
             justifyContent="center"
@@ -94,7 +129,7 @@ const UserProfilePage = () => {
               direction="row"
               alignItems="center"
               justifyContent="center"
-              spacing={2}
+              spacing={3}
               sx={{
                 py: 2,
                 px: 3,
@@ -162,8 +197,23 @@ const UserProfilePage = () => {
                   {user.name}
                 </Typography>
                 {!!auth &&
-                  auth.user?.userId === user.id &&
-                  showStatus(user.status, { fontWeight: "bold" })}
+                auth.user?.userId === user.id &&
+                user.status === "blocked"
+                  ? showStatus(user.status, { fontWeight: "bold" })
+                  : null}
+                {!!auth && auth.user?.userId === user.id && (
+                  <Button
+                    onClick={() => setOpenShoppingList(true)}
+                    variant="contained"
+                    sx={{
+                      mt: 2,
+                      color: (theme) => theme.palette.text.light,
+                    }}
+                    endIcon={<DescriptionIcon />}
+                  >
+                    Pokaż listę zakupów
+                  </Button>
+                )}
               </Box>
             </Stack>
           </Stack>

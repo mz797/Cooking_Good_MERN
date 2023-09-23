@@ -11,9 +11,9 @@ import {
 import dayjs from "dayjs";
 import WarningIcon from "@mui/icons-material/Warning";
 import React from "react";
-import { RecipeType } from "../../../types/recipe-types";
+import { RecipeType } from "../../../../types/recipe-types";
 import { useSelector } from "react-redux";
-import { RootState } from "../../../store/store";
+import { RootState } from "../../../../store/store";
 import axios from "axios";
 
 const Comment = ({ comment, recipe }: myProps) => {

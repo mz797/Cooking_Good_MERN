@@ -22,7 +22,11 @@ const LoginDialog = ({ open, onClose, title, content }: myProps) => {
           <Button onClick={onClose} variant="text">
             Anuluj
           </Button>
-          <Button onClick={navigateToLogin} variant="contained">
+          <Button
+            onClick={navigateToLogin}
+            variant="contained"
+            sx={{ color: (theme) => theme.palette.text.light }}
+          >
             Zaloguj się
           </Button>
         </DialogActions>

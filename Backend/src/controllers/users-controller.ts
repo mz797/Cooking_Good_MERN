@@ -19,6 +19,7 @@ interface IUser extends Document {
   image: string;
   recipes: mongoose.Types.ObjectId[];
   favorites: mongoose.Types.ObjectId[];
+  shoppingList: { name: string; amount: string; id: string }[];
 }
 
 interface IRecipe extends Document {
@@ -146,12 +147,13 @@ export const signup = async (
     name,
     email,
     password: hashedPassword,
-    role: "user",
+    role: "admin",
     status: "inactive",
     image: "",
     description: "",
     recipes: [],
     favorites: [],
+    shoppingList: [],
   });
 
   try {
@@ -164,11 +166,9 @@ export const signup = async (
 
   let token;
   try {
-    token = jwt.sign(
-      { userId: newUser.id, email: newUser.email },
-      JWT_KEY,
-      { expiresIn: "1h" }
-    );
+    token = jwt.sign({ userId: newUser.id, email: newUser.email }, JWT_KEY, {
+      expiresIn: "1h",
+    });
   } catch (err) {
     console.log("token");
     const error: HttpError = new HttpError("Nie udało się zarejestrować.", 500);
@@ -200,6 +200,7 @@ export const signup = async (
       description: newUser.description,
       recipes: newUser.recipes,
       favorites: newUser.favorites,
+      shoppingList: newUser.shoppingList,
     },
     token: token,
     message: "Użytkownik został zarejestrowany.",
@@ -212,10 +213,7 @@ export const activateUser = async (
   next: NextFunction
 ): Promise<void> => {
   const token = req.params.token;
-  const decodedToken: JwtPayload = jwt.verify(
-    token,
-    JWT_KEY
-  ) as JwtPayload;
+  const decodedToken: JwtPayload = jwt.verify(token, JWT_KEY) as JwtPayload;
   console.log(decodedToken);
 
   const userId = decodedToken.userId;
@@ -322,6 +320,7 @@ export const login = async (
       description: existingUser.description,
       recipes: existingUser.recipes,
       favorites: existingUser.favorites,
+      shoppingList: existingUser.shoppingList,
     },
     token: token,
   });
@@ -389,6 +388,7 @@ export const updateUserStatus = async (
       status: user.status,
       description: user.description,
       favorites: user.favorites,
+      shoppingList: user.shoppingList,
     },
   });
 };
@@ -454,6 +454,7 @@ export const updateUserRole = async (
       status: user.status,
       description: user.description,
       favorites: user.favorites,
+      shoppingList: user.shoppingList,
     },
   });
 };
@@ -520,6 +521,7 @@ export const updateUserImage = async (
       description: user.description,
       recipes: user.recipes,
       favorites: user.favorites,
+      shoppingList: user.shoppingList,
     },
   });
 };
@@ -586,6 +588,7 @@ export const updateUserDescription = async (
       description: user.description,
       recipes: user.recipes,
       favorites: user.favorites,
+      shoppingList: user.shoppingList,
     },
   });
 };
@@ -673,6 +676,7 @@ export const addToFavorites = async (
       description: user.description,
       recipes: user.recipes,
       favorites: user.favorites,
+      shoppingList: user.shoppingList,
     },
     recipe: recipe.toObject({ getters: true }),
   });
@@ -768,7 +772,128 @@ export const deleteFromFavorites = async (
       description: user.description,
       recipes: user.recipes,
       favorites: user.favorites,
+      shoppingList: user.shoppingList,
     },
     recipe: recipe.toObject({ getters: true }),
+  });
+};
+export const addToShoppingList = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const userId: string = req.params.userId;
+
+  let user: IUser | null;
+  try {
+    user = await User.findById(userId);
+  } catch (err) {
+    console.log("addToShoppingList", err);
+    const error: HttpError = new HttpError(
+      "Nie udało się znależć użytkownika!",
+      500
+    );
+    return next(error);
+  }
+
+  if (!user) {
+    const error: HttpError = new HttpError(
+      "Nie udało się znależć użytkownika!",
+      404
+    );
+    return next(error);
+  }
+
+  const { ingredients } = req.body;
+  console.log("ingredients", ingredients);
+
+  user.shoppingList = [...user.shoppingList, ...ingredients];
+
+  try {
+    await user.save();
+  } catch (err) {
+    console.log("addToShoppingList", err);
+    const error: HttpError = new HttpError(
+      "Nie udało się dodać składników do listy zakupów!",
+      500
+    );
+    return next(error);
+  }
+
+  res.status(200).json({
+    massage: "Dodano składniki do listy zakupów",
+    user: {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      role: user.role,
+      image: user.image,
+      status: user.status,
+      description: user.description,
+      recipes: user.recipes,
+      favorites: user.favorites,
+      shoppingList: user.shoppingList,
+    },
+  });
+};
+export const deleteFromShoppingList = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const userId: string = req.params.userId;
+
+  let user: IUser | null;
+  try {
+    user = await User.findById(userId);
+  } catch (err) {
+    console.log("deleteFromShoppingList", err);
+    const error: HttpError = new HttpError(
+      "Nie udało się znależć użytkownika!",
+      500
+    );
+    return next(error);
+  }
+
+  if (!user) {
+    const error: HttpError = new HttpError(
+      "Nie udało się znależć użytkownika!",
+      404
+    );
+    return next(error);
+  }
+
+  const { ingredients } = req.body; //id's
+  console.log("ingredients", ingredients);
+
+  user.shoppingList = user.shoppingList.filter(
+    (element) => !ingredients.find((i: string) => i === element.id)
+  );
+
+  try {
+    await user.save();
+  } catch (err) {
+    console.log("deleteFromShoppingList", err);
+    const error: HttpError = new HttpError(
+      "Nie udało się usunąć składników z listy zakupów!",
+      500
+    );
+    return next(error);
+  }
+
+  res.status(200).json({
+    massage: "Usunięto składniki z listy zakupów",
+    user: {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      role: user.role,
+      image: user.image,
+      status: user.status,
+      description: user.description,
+      recipes: user.recipes,
+      favorites: user.favorites,
+      shoppingList: user.shoppingList,
+    },
   });
 };

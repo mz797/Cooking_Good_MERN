@@ -1,12 +1,12 @@
 import { Box, Stack, Typography } from "@mui/material";
 import styled from "styled-components";
-import RecipeDifficulty from "./RecipeDifficulty";
+import RecipeDifficulty from "./Details/RecipeDifficulty";
 
-import RecipeTime from "./RecipeTime";
-import PersonCount from "./PersonCount";
+import RecipeTime from "./Details/RecipeTime";
+import PersonCount from "./Details/PersonCount";
 import StarsRating from "../../common/StarsRating";
 import { RecipeType } from "../../../types/recipe-types";
-import ViewsAndLikes from "./ViewsAndLikes";
+import ViewsAndLikes from "./Details/ViewsAndLikes";
 
 const Image = styled(Box)`
   width: 100%;
@@ -21,7 +21,6 @@ const Image = styled(Box)`
 `;
 const InfoBox = styled(Box)`
   width: 100%;
-  height: 39%;
   background-color: rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(2px);
   transition: height 0.3s;

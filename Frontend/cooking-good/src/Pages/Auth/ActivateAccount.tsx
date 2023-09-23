@@ -65,6 +65,7 @@ const ActivateAccount = () => {
               </Typography>
               <Button
                 variant="contained"
+                sx={{ color: (theme) => theme.palette.text.light }}
                 onClick={() => {
                   navigate("/auth/login");
                 }}
