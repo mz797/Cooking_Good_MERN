@@ -22,7 +22,7 @@ type Inputs = {
   personCount: number;
   ingredients: { name: string; amount: string }[];
 
-  description: string;
+  description: { content: string }[];
   shortDescription: string;
 };
 type myProps = {
@@ -71,7 +71,7 @@ const AddRecipe = ({ recipe }: myProps) => {
             { name: "", amount: "" },
           ],
       shortDescription: editedRecipe ? editedRecipe.shortDescription : "",
-      description: editedRecipe ? editedRecipe.description : "",
+      description: editedRecipe ? editedRecipe.description : [{ content: "" }],
     },
   });
   useEffect(() => {
@@ -100,6 +100,15 @@ const AddRecipe = ({ recipe }: myProps) => {
     control,
   });
 
+  const {
+    fields: descriptionFields,
+    append: appendDesc,
+    remove: removeDesc,
+  } = useFieldArray({
+    name: "description",
+    control,
+  });
+
   const [step, setStep] = useState<number>(1);
 
   const onSubmit = (data: Inputs) => {
@@ -109,7 +118,7 @@ const AddRecipe = ({ recipe }: myProps) => {
       "categories",
       JSON.stringify(data.categories.map((category) => category.id))
     );
-    formData.append("description", data.description);
+    formData.append("description", JSON.stringify(data.description));
     formData.append("shortDescription", data.shortDescription);
     formData.append("difficulty", data.difficulty.toString());
     formData.append("image", data.image);
@@ -144,6 +153,13 @@ const AddRecipe = ({ recipe }: myProps) => {
   const handleRemoveIngredient = (idx: number) => {
     remove(idx);
   };
+
+  const handleAddDescription = () => {
+    appendDesc({ content: "" });
+  };
+  const handleRemoveDescription = (idx: number) => {
+    removeDesc(idx);
+  };
   const handleNextStep = () => {
     if (step === 1) {
       trigger(["name", "image", "categories"]).then((res) => {
@@ -161,6 +177,7 @@ const AddRecipe = ({ recipe }: myProps) => {
   const handlePrevtStep = () => {
     setStep((prev) => prev - 1);
   };
+  console.log(watch("name"));
 
   return (
     <Container sx={{ mt: 4 }}>
@@ -194,10 +211,12 @@ const AddRecipe = ({ recipe }: myProps) => {
             {step === 3 && (
               <AddRecipeDescription
                 control={control}
-                description={watch("description")}
+                description={descriptionFields}
                 setValue={setValue}
                 register={register}
                 errors={errors}
+                handleAddDescription={handleAddDescription}
+                handleRemoveDescription={handleRemoveDescription}
               />
             )}
             <Container

@@ -37,7 +37,9 @@ const AddPhotoDialog = ({ open, onSave, onClose }: myProps) => {
     <Dialog open={open} onClose={onClose}>
       <DialogTitle>Dodaj zdjęcie</DialogTitle>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <DialogContent sx={{ display: "flex", justifyContent: "center" }}>
+        <DialogContent
+          sx={{ display: "flex", justifyContent: "center", minWidth: 300 }}
+        >
           <ImageUpload
             id={"image"}
             register={{

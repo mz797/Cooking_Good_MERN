@@ -8,6 +8,7 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 import { transporter } from "../config/emailConfig";
 import Recipe from "../models/recipe";
 import { JWT_KEY } from "../config/configConsts";
+import puppeteer, { Browser, Page } from "puppeteer";
 
 interface IUser extends Document {
   name: string;
@@ -896,4 +897,62 @@ export const deleteFromShoppingList = async (
       shoppingList: user.shoppingList,
     },
   });
+};
+export const downloadShoppingList = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const userId: string = req.params.userId;
+
+  let user: IUser | null;
+  try {
+    user = await User.findById(userId);
+
+    if (!user) {
+      const error: HttpError = new HttpError(
+        "Nie udało się znależć użytkownika!",
+        404
+      );
+      return next(error);
+    }
+
+    const browser: Browser = await puppeteer.launch();
+    const page: Page = await browser.newPage();
+
+    const html = `
+  <div>
+  <h1 style="margin-bottom: 12px;
+		text-align:center;
+		word-break: break-word;
+		font-weight: 500;
+		letter-spacing: 0.7">Lista składników</h1>
+		${user.shoppingList
+      .map(
+        (
+          ingredient
+        ) => `<div style="width:100%; display:flex; justify-content:space-between; border-bottom:1px solid #999;letter-spacing: '1px'; padding:8px:text-transform:uppercase;font-size:20px">
+      <span><input type="checkbox"/>${ingredient.name}</span>
+      <span>${ingredient.amount}</span>
+      </div>`
+      )
+      .join("")}
+</div>
+  `;
+
+    await page.setContent(html);
+    const pdfBuffer = await page.pdf({
+      format: "A4",
+      margin: { left: "1cm", top: "1cm", right: "1cm", bottom: "2cm" },
+    });
+
+    await browser.close();
+
+    res.contentType("application/pdf");
+    res.send(pdfBuffer);
+  } catch (err) {
+    console.log("PDF", err);
+    const error = new HttpError("Wystąpił błąd podczas generowania PDF.", 500);
+    return next(error);
+  }
 };

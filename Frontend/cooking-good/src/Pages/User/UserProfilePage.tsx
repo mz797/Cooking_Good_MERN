@@ -89,6 +89,22 @@ const UserProfilePage = () => {
     }
   };
 
+  const handleDownloadShoppingList = async () => {
+    if (!!auth.user && auth.user.userId === user?.id)
+      axios({
+        url: `http://localhost:8080/users/shopping-list/download/${auth.user.userId}`,
+        method: "GET",
+        responseType: "blob",
+      }).then((response) => {
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", `Lista_zakupów.pdf`);
+        document.body.appendChild(link);
+        link.click();
+      });
+  };
+
   return (
     <>
       {!!user && (
@@ -113,6 +129,7 @@ const UserProfilePage = () => {
             onDelete={(ingredients) =>
               handleDeleteFromShoppingList(ingredients)
             }
+            onDownload={handleDownloadShoppingList}
           />
           <Stack
             alignItems="center"

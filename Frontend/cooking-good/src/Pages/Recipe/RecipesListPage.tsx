@@ -28,7 +28,10 @@ const RecipesListPage = () => {
         background: (theme) => theme.palette.background.darker,
       }}
     >
-      <Container sx={{ p: 0, py: 2, pb: 8 }} maxWidth={"xl"}>
+      <Container
+        sx={{ p: 0, py: 2, pb: 8, minHeight: "100vh" }}
+        maxWidth={"xl"}
+      >
         <Typography
           variant="h4"
           sx={{

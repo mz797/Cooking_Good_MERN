@@ -36,7 +36,7 @@ interface IRecipe extends Document {
     name: string;
     amount: string;
   }[];
-  description: string;
+  description: { content: string }[];
   personCount: number;
   shortDescription: string;
   creator: any;
@@ -45,7 +45,7 @@ interface IRecipe extends Document {
   comments: { id: string; content: string; creator: any }[];
   likes: { creator: any }[];
   visitCount: number;
-  commentImages: { image: string; creator: any; addedAt: Date }[];
+  commentImages: { image: string; creator: any; addedAt: Date; _id?: string }[];
 }
 
 type RequestParams = { recipeId: string };
@@ -176,7 +176,7 @@ export const addRate = async (
   }
   let updatedRecipe;
   try {
-    updatedRecipe = await recipe.populate("creator", "name");
+    updatedRecipe = await recipe.populate("creator", "name image");
   } catch (err) {
     console.log(err);
     const error = new HttpError(
@@ -318,19 +318,13 @@ export const addRecipe = async (
     const error = new HttpError("Niepoprawne dane dodawania przepisu.", 422);
     throw error;
   }
-  const {
-    name,
-    time,
-    difficulty,
-    description,
-    creator,
-    personCount,
-    shortDescription,
-  } = req.body;
-  let { ingredients, categories } = req.body;
+  const { name, time, difficulty, creator, personCount, shortDescription } =
+    req.body;
+  let { ingredients, categories, description } = req.body;
 
   ingredients = JSON.parse(ingredients);
   categories = JSON.parse(categories);
+  description = JSON.parse(description);
 
   const newCategories: ICategory[] = [];
 
@@ -439,13 +433,13 @@ export const updateRecipe = async (
     throw error;
   }
 
-  const { name, time, difficulty, description, personCount, shortDescription } =
-    req.body;
-  let { ingredients, categories } = req.body;
+  const { name, time, difficulty, personCount, shortDescription } = req.body;
+  let { ingredients, categories, description } = req.body;
   const newImage = req.file?.path;
 
   ingredients = JSON.parse(ingredients);
   categories = JSON.parse(categories);
+  description = JSON.parse(description);
 
   let recipe: IRecipe | null;
   try {
@@ -687,9 +681,10 @@ export const addCommentImage = async (
 
   try {
     recipe = await Recipe.findById(id)
-      .populate("comments.creator.name")
       .populate("creator", "name image")
-      .populate("categories", "name");
+      .populate("categories")
+      .populate("comments.creator")
+      .populate("commentImages.creator");
   } catch (err) {
     console.log("addCommentImage", err);
     const error = new HttpError(
@@ -760,9 +755,9 @@ export const deleteCommentImage = async (
 
   try {
     recipe = await Recipe.findById(recipeId)
-      .populate("comments.creator.name")
       .populate("creator", "name image")
-      .populate("categories", "name");
+      .populate("categories")
+      .populate("comments.creator");
   } catch (err) {
     console.log("deleteCommentImage", err);
     const error = new HttpError("Nie udało się znależć przepisu!", 500);
@@ -778,10 +773,10 @@ export const deleteCommentImage = async (
     return next(error);
   }
 
-  console.log();
-  recipe.commentImages = recipe.commentImages.filter(
-    (image) => image.toString() !== imageId.toString()
-  );
+  recipe.commentImages = recipe.commentImages.filter((image) => {
+    console.log(image.toString(), imageId);
+    return !!image._id && image._id.toString() !== imageId.toString();
+  });
 
   try {
     await recipe.save();

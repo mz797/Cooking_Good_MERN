@@ -535,11 +535,18 @@ const RecipeDetailsPage = () => {
                 >
                   Przepis
                 </Typography>
-                <div
-                  dangerouslySetInnerHTML={{
-                    __html: recipe.description,
-                  }}
-                />
+                {recipe.description.map((desc, idx) => (
+                  <>
+                    {recipe.description.length > 1 && (
+                      <Typography variant="h5">Krok {idx}</Typography>
+                    )}
+                    <div
+                      dangerouslySetInnerHTML={{
+                        __html: desc.content,
+                      }}
+                    />
+                  </>
+                ))}
               </Grid>
             </Grid>
           </>
@@ -650,17 +657,17 @@ const RecipeDetailsPage = () => {
   );
 
   /* <Grid
-                                                                                                                                                                                                                                                                                                                                            <Grid
-                                                                                                                                                                                                                                                                                                                                            item
-                                                                                                                                                                                                                                                                                                                                            xs={12}
-                                                                                                                                                                                                                                                                                                                                            sx={{ mt: 2, borderTop: "1px solid #999" }}>
-                                                                                                                                                                                                                                                                                                                                            <Stack direction="row" alignItems="center">
-                                                                                                                                                                                                                                                                                                                                            <ChatIcon sx={{ mr: 2, fontSize: 32 }} />
-                                                                                                                                                                                                                                                                                                                                            <Typography variant="h4">{`Komentarze(${recipe.comments.length})`}</Typography>
-                                                                                                                                                                                                                                                                                                                                            </Stack>
-                                                                                              
-                                                                                                                                                                                                                                                                                                                                                    </Grid>
-                                                                                                                                                                                                                                                                                                                                                </Grid> */
+                                                                                                                                                                                                                                                                                                                                                  <Grid
+                                                                                                                                                                                                                                                                                                                                                  item
+                                                                                                                                                                                                                                                                                                                                                  xs={12}
+                                                                                                                                                                                                                                                                                                                                                  sx={{ mt: 2, borderTop: "1px solid #999" }}>
+                                                                                                                                                                                                                                                                                                                                                  <Stack direction="row" alignItems="center">
+                                                                                                                                                                                                                                                                                                                                                  <ChatIcon sx={{ mr: 2, fontSize: 32 }} />
+                                                                                                                                                                                                                                                                                                                                                  <Typography variant="h4">{`Komentarze(${recipe.comments.length})`}</Typography>
+                                                                                                                                                                                                                                                                                                                                                  </Stack>
+                                                                                                    
+                                                                                                                                                                                                                                                                                                                                                          </Grid>
+                                                                                                                                                                                                                                                                                                                                                      </Grid> */
 };
 export default RecipeDetailsPage;
 const Image = styled(Box)`

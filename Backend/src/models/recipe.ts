@@ -27,7 +27,11 @@ const recipeSchema = new Schema({
   ],
   personCount: { type: Number, required: true },
   shortDescription: { type: String, required: true },
-  description: { type: String, required: true },
+  description: [
+    {
+      content: { type: String, required: true },
+    },
+  ],
   creator: {
     type: mongoose.Types.ObjectId,
     ref: "User",

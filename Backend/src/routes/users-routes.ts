@@ -7,6 +7,7 @@ import {
   addToShoppingList,
   deleteFromFavorites,
   deleteFromShoppingList,
+  downloadShoppingList,
   getSingleUser,
   getUsers,
   login,
@@ -33,6 +34,7 @@ router.put("/description/:userId", updateUserDescription);
 
 router.put("/shopping-list/:userId", addToShoppingList);
 router.delete("/shopping-list/:userId", deleteFromShoppingList);
+router.get("/shopping-list/download/:userId", downloadShoppingList);
 
 router.post(
   "/signup",

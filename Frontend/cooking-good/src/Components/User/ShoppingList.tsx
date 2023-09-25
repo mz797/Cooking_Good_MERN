@@ -17,8 +17,15 @@ import {
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
+import EmptyState from "../common/EmptyState";
 
-const ShoppingList = ({ user, open, onClose, onDelete }: myProps) => {
+const ShoppingList = ({
+  user,
+  open,
+  onClose,
+  onDelete,
+  onDownload,
+}: myProps) => {
   const token = useSelector((state: RootState) => state.auth.token);
   const [selectedIngredients, setSelectedIngredients] = useState<string[] | []>(
     []
@@ -89,6 +96,9 @@ const ShoppingList = ({ user, open, onClose, onDelete }: myProps) => {
               <Divider />
             </>
           ))}
+          {user.shoppingList.length === 0 && (
+            <EmptyState message="Brak zapisanych składników" />
+          )}
         </List>
       </DialogContent>
       <DialogActions>
@@ -104,7 +114,8 @@ const ShoppingList = ({ user, open, onClose, onDelete }: myProps) => {
           Usuń
         </Button>
         <Button
-          onClick={onClose}
+          onClick={onDownload}
+          disabled={user.shoppingList.length === 0}
           variant="contained"
           sx={{ color: (theme) => theme.palette.text.light }}
         >
@@ -121,4 +132,5 @@ type myProps = {
   open: boolean;
   onClose: () => void;
   onDelete: (ingredients: string[]) => void;
+  onDownload: () => void;
 };
