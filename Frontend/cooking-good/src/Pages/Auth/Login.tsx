@@ -1,24 +1,26 @@
-import {
-  Box,
-  Button,
-  Card,
-  CardContent,
-  Grid,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Box, Button, Grid, TextField, Typography } from "@mui/material";
 import React from "react";
 import { useForm } from "react-hook-form";
 import styled from "styled-components";
-import PasswordInput from "../../Components/Auth/PasswordInput";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { login } from "../../store/authSlice";
 import { useNotification } from "../../hooks/notification-hook";
+import PasswordInput from "../../Components/Auth/PasswordInput";
 
 const StyledTextField = styled(TextField)`
   width: 100%;
+`;
+
+export const IntroShape = styled(Box)`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  clip-path: polygon(0 0, 54% 0, 34% 100%, 0% 100%);
+  background-image: url("http://localhost:8080/uploads/images/background.jpg");
 `;
 
 type Inputs = {
@@ -67,73 +69,75 @@ const Login = () => {
   return (
     <Box
       sx={{
-        minHeight: "100vh",
+        position: "relative",
+        height: "calc( 100vh - 64px )",
+        overflow: "hidden",
         p: 4,
         pt: 8,
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "start",
         background: (theme) => theme.palette.background.darker,
       }}
     >
-      <Card>
-        <Grid container>
-          <Grid item xs={7}>
-            <CardContent sx={{ flex: "1 0 auto" }}>
-              <Typography variant="h3" sx={{ textAlign: "center", mb: 2 }}>
-                Zaloguj się
-              </Typography>
-              <form onSubmit={handleSubmit(handleFormSubmit)}>
-                <StyledTextField
-                  label="E-mail*"
-                  sx={{ mb: 2 }}
-                  {...register("email", {
-                    required: {
-                      value: true,
-                      message: "Pole jest wymagane",
-                    },
-                  })}
-                  error={!!errors.email}
-                  helperText={errors.email?.message?.toString() || ""}
-                />
-                <PasswordInput
-                  label="Hasło*"
-                  name="password"
-                  register={register}
-                  validation={{
-                    required: {
-                      value: true,
-                      message: "Pole jest wymagane",
-                    },
-                  }}
-                  error={errors.password}
-                />
-                <Button
-                  disabled={!!Object.keys(errors).length}
-                  variant="contained"
-                  sx={{
-                    mt: 2,
-                    width: "100%",
-                    color: (theme) => theme.palette.text.light,
-                  }}
-                  type="submit"
-                >
-                  Zaloguj się
-                </Button>
-              </form>
-            </CardContent>
-          </Grid>
-          <Grid
-            item
-            xs={5}
-            sx={{
-              backgroundImage: `url(http://localhost:8080/uploads/images/auth-background.png)`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-            }}
-          />
+      <IntroShape />
+      <Grid container sx={{ height: "100%" }}>
+        <Grid item xs={6} />
+        <Grid
+          item
+          xs={6}
+          sx={{
+            height: "100%",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            px: 6,
+          }}
+        >
+          <Typography variant="h3" sx={{ textAlign: "center", mb: 2 }}>
+            Zaloguj się
+          </Typography>
+          <form onSubmit={handleSubmit(handleFormSubmit)}>
+            <StyledTextField
+              label="E-mail*"
+              sx={{ mb: 2 }}
+              {...register("email", {
+                required: {
+                  value: true,
+                  message: "Pole jest wymagane",
+                },
+              })}
+              error={!!errors.email}
+              helperText={errors.email?.message?.toString() || ""}
+            />
+            <PasswordInput
+              label="Hasło*"
+              name="password"
+              register={register}
+              validation={{
+                required: {
+                  value: true,
+                  message: "Pole jest wymagane",
+                },
+              }}
+              error={errors.password}
+            />
+            <Button
+              disabled={!!Object.keys(errors).length}
+              variant="contained"
+              sx={{
+                mt: 2,
+                width: "100%",
+                background: (theme) => theme.color.header,
+                color: (theme) => theme.palette.text.light,
+                "&:hover": {
+                  background: (theme) => theme.color.headerDarker,
+                },
+              }}
+              type="submit"
+            >
+              Zaloguj się
+            </Button>
+          </form>
         </Grid>
-      </Card>
+      </Grid>
     </Box>
   );
 };

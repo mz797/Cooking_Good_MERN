@@ -1,19 +1,11 @@
-import {
-  Box,
-  Button,
-  Card,
-  CardContent,
-  Grid,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Box, Button, Grid, TextField, Typography } from "@mui/material";
 import axios from "axios";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import styled from "styled-components";
 import PasswordInput from "../../Components/Auth/PasswordInput";
 import { useNotification } from "../../hooks/notification-hook";
+import { IntroShape } from "./Login";
 
 const StyledTextField = styled(TextField)`
   width: 100%;
@@ -68,142 +60,148 @@ const Signup = () => {
   return (
     <Box
       sx={{
-        minHeight: "100vh",
+        position: "relative",
+        height: "calc( 100vh - 64px )",
+        overflow: "hidden",
         p: 4,
         pt: 8,
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "start",
         background: (theme) => theme.palette.background.darker,
       }}
     >
-      <Card sx={{ maxWidth: 900, width: "80vw", minHeight: "50vh" }}>
-        <Grid container sx={{ minHeight: "50vh" }}>
-          {!isSignedUp && (
-            <Grid item xs={7}>
-              <CardContent sx={{ flex: "1 0 auto" }}>
-                <Typography variant="h3" sx={{ textAlign: "center", mb: 2 }}>
-                  Zarejestruj się
-                </Typography>
-                <form onSubmit={handleSubmit(handleFormSubmit)}>
-                  <StyledTextField
-                    sx={{ mb: 2 }}
-                    label="E-mail*"
-                    {...register("email", {
-                      required: {
-                        value: true,
-                        message: "To pole jest wymagane",
-                      },
-                    })}
-                    error={!!errors.email}
-                    helperText={errors?.email?.message || ""}
-                  />
-                  <StyledTextField
-                    sx={{ mb: 2 }}
-                    label="Nazwa użytkownika*"
-                    {...register("name", {
-                      required: {
-                        value: true,
-                        message: "To pole jest wymagane",
-                      },
-                      minLength: {
-                        value: 3,
-                        message: "Wprowadz conajmniej 3 znaki",
-                      },
-                    })}
-                    error={!!errors.name}
-                    helperText={errors?.name?.message || ""}
-                  />
-                  <PasswordInput
-                    label="Hasło*"
-                    name="password"
-                    register={register}
-                    validation={{
-                      required: {
-                        value: true,
-                        message: "Pole jest wymagane",
-                      },
-                      minLength: {
-                        value: 6,
-                        message: "Hasło musi mieć conajmniej 6 znaków.",
-                      },
-                    }}
-                    error={errors.password}
-                    sx={{ mb: 2 }}
-                  />
-                  <PasswordInput
-                    label="Powtórz hasło*"
-                    name="confPassword"
-                    register={register}
-                    validation={{
-                      required: {
-                        value: true,
-                        message: "To pole jest wymagane",
-                      },
-                      validate: (cPswd: string) => {
-                        if (cPswd !== watch("password"))
-                          return "Hasła muszę być takie same.";
-                      },
-                    }}
-                    error={errors.confPassword}
-                  />
-                  <Button
-                    disabled={!!Object.keys(errors).length}
-                    variant="contained"
-                    sx={{
-                      mt: 2,
-                      width: "100%",
-                      color: (theme) => theme.palette.text.light,
-                    }}
-                    type="submit"
-                  >
-                    Zarejestruj się
-                  </Button>
-                </form>
-              </CardContent>
-            </Grid>
-          )}
-          {isSignedUp && (
-            <Grid item xs={7}>
-              <CardContent
-                sx={{ height: "100%" }}
-                component={Stack}
-                justifyContent={"space-evenly"}
-              >
-                <Typography variant="h3" sx={{ textAlign: "center", mb: 2 }}>
-                  Aktywuj swoje konto
-                </Typography>
-                <Typography variant="h5" sx={{ textAlign: "center", mb: 2 }}>
-                  Sprawdz pocztę
-                </Typography>
-                <Typography
-                  variant="h5"
-                  component={"span"}
-                  sx={{ textAlign: "center", mb: 2 }}
-                >
-                  Wysłaliśmy link aktywacyjny na email:{" "}
-                </Typography>
-                <Typography
-                  variant="h5"
-                  component={"span"}
-                  sx={{ textAlign: "center", mb: 2, fontWeight: 600 }}
-                >
-                  {watch("email")}
-                </Typography>
-              </CardContent>
-            </Grid>
-          )}
+      <IntroShape />
+      <Grid container sx={{ height: "100%" }}>
+        <Grid item xs={6} />
+        {!isSignedUp && (
           <Grid
             item
-            xs={5}
+            xs={6}
             sx={{
-              backgroundImage: `url(http://localhost:8080/uploads/images/auth-background.png)`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
+              height: "100%",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              px: 6,
             }}
-          />
-        </Grid>
-      </Card>
+          >
+            <Typography variant="h3" sx={{ textAlign: "center", mb: 2 }}>
+              Zarejestruj się
+            </Typography>
+            <form onSubmit={handleSubmit(handleFormSubmit)}>
+              <StyledTextField
+                sx={{ mb: 2 }}
+                label="E-mail*"
+                {...register("email", {
+                  required: {
+                    value: true,
+                    message: "To pole jest wymagane",
+                  },
+                })}
+                error={!!errors.email}
+                helperText={errors?.email?.message || ""}
+              />
+              <StyledTextField
+                sx={{ mb: 2 }}
+                label="Nazwa użytkownika*"
+                {...register("name", {
+                  required: {
+                    value: true,
+                    message: "To pole jest wymagane",
+                  },
+                  minLength: {
+                    value: 3,
+                    message: "Wprowadz conajmniej 3 znaki",
+                  },
+                })}
+                error={!!errors.name}
+                helperText={errors?.name?.message || ""}
+              />
+              <PasswordInput
+                label="Hasło*"
+                name="password"
+                register={register}
+                validation={{
+                  required: {
+                    value: true,
+                    message: "Pole jest wymagane",
+                  },
+                  minLength: {
+                    value: 6,
+                    message: "Hasło musi mieć conajmniej 6 znaków.",
+                  },
+                }}
+                error={errors.password}
+                sx={{ mb: 2 }}
+              />
+              <PasswordInput
+                label="Powtórz hasło*"
+                name="confPassword"
+                register={register}
+                validation={{
+                  required: {
+                    value: true,
+                    message: "To pole jest wymagane",
+                  },
+                  validate: (cPswd: string) => {
+                    if (cPswd !== watch("password"))
+                      return "Hasła muszę być takie same.";
+                  },
+                }}
+                error={errors.confPassword}
+              />
+              <Button
+                disabled={!!Object.keys(errors).length}
+                variant="contained"
+                sx={{
+                  mt: 2,
+                  width: "100%",
+                  background: (theme) => theme.color.header,
+                  color: (theme) => theme.palette.text.light,
+                  "&:hover": {
+                    background: (theme) => theme.color.headerDarker,
+                  },
+                }}
+                type="submit"
+              >
+                Zarejestruj się
+              </Button>
+            </form>
+          </Grid>
+        )}
+        {isSignedUp && (
+          <Grid
+            item
+            xs={6}
+            sx={{
+              height: "100%",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              px: 6,
+            }}
+          >
+            <Typography variant="h3" sx={{ textAlign: "center", mb: 2 }}>
+              Aktywuj swoje konto
+            </Typography>
+            <Typography variant="h5" sx={{ textAlign: "center", mb: 2 }}>
+              Sprawdz pocztę
+            </Typography>
+            <Typography
+              variant="h5"
+              component={"span"}
+              sx={{ textAlign: "center", mb: 2 }}
+            >
+              Wysłaliśmy link aktywacyjny na email:{" "}
+            </Typography>
+            <Typography
+              variant="h5"
+              component={"span"}
+              sx={{ textAlign: "center", mb: 2, fontWeight: 600 }}
+            >
+              {watch("email")}
+            </Typography>
+          </Grid>
+        )}
+      </Grid>
     </Box>
   );
 };

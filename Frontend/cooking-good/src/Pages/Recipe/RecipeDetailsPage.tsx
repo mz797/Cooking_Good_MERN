@@ -38,7 +38,9 @@ import StarIcon from "@mui/icons-material/Star";
 import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
 import AddPhotoDialog from "../../Components/Recipes/Recipe/AddPhotoDialog";
 import CommentImage from "../../Components/Recipes/Recipe/Details/CommentImage";
+import LocalActivityIcon from "@mui/icons-material/LocalActivity";
 import { Masonry } from "@mui/lab";
+import StepByStep from "../../Components/Recipes/Recipe/StepByStep";
 
 type CommentType = {
   content: string;
@@ -61,6 +63,7 @@ const RecipeDetailsPage = () => {
   const [loginDialogContent, setLoginDialogContent] = useState<string>("");
   const [likeIsLoading, setLikeIsLoading] = useState<boolean>(false);
   const [pdfIsLoading, setPdfIsLoading] = useState<boolean>(false);
+  const [openStepByStep, setOpenStepByStep] = useState<boolean>(false);
 
   const [selectedIngredients, setSelectedIngredients] = useState<
     { name: string; amount: string }[] | []
@@ -230,6 +233,17 @@ const RecipeDetailsPage = () => {
     }
   };
 
+  const handleOpenAddImage = () => {
+    if (!token) {
+      setLoginDialogContent(
+        "Jedynie zalogowani użytkownicy mogą dodać zdjęcie."
+      );
+      setLoginDialogOpen(true);
+      return;
+    }
+    setOpenAddPhoto(true);
+  };
+
   const handleAddIngredients = async () => {
     if (!token) {
       setLoginDialogContent(
@@ -288,6 +302,13 @@ const RecipeDetailsPage = () => {
             value={1}
             onSubmit={handleRateSubmit}
             onClose={() => setOpenRateDialog(false)}
+          />
+        )}
+        {recipe && (
+          <StepByStep
+            recipe={recipe}
+            open={openStepByStep}
+            onClose={() => setOpenStepByStep(false)}
           />
         )}
         <AddPhotoDialog
@@ -519,7 +540,7 @@ const RecipeDetailsPage = () => {
                         color: (theme) => theme.palette.text.light,
                       }}
                       endIcon={<AddPhotoAlternateIcon />}
-                      onClick={() => setOpenAddPhoto(true)}
+                      onClick={handleOpenAddImage}
                     >
                       Dodaj zdjęcie
                     </Button>
@@ -527,14 +548,25 @@ const RecipeDetailsPage = () => {
                 </Paper>
               </Grid>
               <Grid item xs={12} md={6.5}>
-                <Typography
-                  variant="h4"
-                  sx={{
-                    color: (theme) => theme.palette.primary.main,
-                  }}
-                >
-                  Przepis
-                </Typography>
+                <Stack direction="row" justifyContent="space-between">
+                  <Typography
+                    variant="h4"
+                    sx={{
+                      color: (theme) => theme.palette.primary.main,
+                    }}
+                  >
+                    Przepis
+                  </Typography>
+                  {recipe.description.length > 1 && (
+                    <Button
+                      variant={"contained"}
+                      endIcon={<LocalActivityIcon />}
+                      onClick={() => setOpenStepByStep(true)}
+                    >
+                      Krok po Kroku
+                    </Button>
+                  )}
+                </Stack>
                 {recipe.description.map((desc, idx) => (
                   <>
                     {recipe.description.length > 1 && (
@@ -657,17 +689,17 @@ const RecipeDetailsPage = () => {
   );
 
   /* <Grid
-                                                                                                                                                                                                                                                                                                                                                  <Grid
-                                                                                                                                                                                                                                                                                                                                                  item
-                                                                                                                                                                                                                                                                                                                                                  xs={12}
-                                                                                                                                                                                                                                                                                                                                                  sx={{ mt: 2, borderTop: "1px solid #999" }}>
-                                                                                                                                                                                                                                                                                                                                                  <Stack direction="row" alignItems="center">
-                                                                                                                                                                                                                                                                                                                                                  <ChatIcon sx={{ mr: 2, fontSize: 32 }} />
-                                                                                                                                                                                                                                                                                                                                                  <Typography variant="h4">{`Komentarze(${recipe.comments.length})`}</Typography>
-                                                                                                                                                                                                                                                                                                                                                  </Stack>
-                                                                                                    
-                                                                                                                                                                                                                                                                                                                                                          </Grid>
-                                                                                                                                                                                                                                                                                                                                                      </Grid> */
+                                                                                                                                                                                                                                                                                                                                                                                  <Grid
+                                                                                                                                                                                                                                                                                                                                                                                  item
+                                                                                                                                                                                                                                                                                                                                                                                  xs={12}
+                                                                                                                                                                                                                                                                                                                                                                                  sx={{ mt: 2, borderTop: "1px solid #999" }}>
+                                                                                                                                                                                                                                                                                                                                                                                  <Stack direction="row" alignItems="center">
+                                                                                                                                                                                                                                                                                                                                                                                  <ChatIcon sx={{ mr: 2, fontSize: 32 }} />
+                                                                                                                                                                                                                                                                                                                                                                                  <Typography variant="h4">{`Komentarze(${recipe.comments.length})`}</Typography>
+                                                                                                                                                                                                                                                                                                                                                                                  </Stack>
+                                                                                                                                    
+                                                                                                                                                                                                                                                                                                                                                                                          </Grid>
+                                                                                                                                                                                                                                                                                                                                                                                      </Grid> */
 };
 export default RecipeDetailsPage;
 const Image = styled(Box)`

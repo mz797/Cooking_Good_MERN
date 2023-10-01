@@ -2,14 +2,8 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import { useNotification } from "../../hooks/notification-hook";
-import {
-  Box,
-  Button,
-  Card,
-  CardContent,
-  CardMedia,
-  Typography,
-} from "@mui/material";
+import { Box, Button, Grid, Typography } from "@mui/material";
+import { IntroShape } from "./Login";
 
 const ActivateAccount = () => {
   const [isActivated, setIsActivated] = useState<Boolean>(false);
@@ -49,40 +43,53 @@ const ActivateAccount = () => {
   }, []);
 
   return (
-    <Card sx={{ display: "flex" }}>
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <Box sx={{ p: 2, maxWidth: 600 }}>
-          {isActivated && (
-            <CardContent sx={{ flex: "1 0 auto" }}>
-              <Typography variant="h3" sx={{ textAlign: "center", mb: 2 }}>
-                Gratulacje od teraz Twoje konto jest aktywne!
-              </Typography>
-              <Button
-                variant="contained"
-                sx={{ color: (theme) => theme.palette.text.light }}
-                onClick={() => {
-                  navigate("/auth/login");
-                }}
-              >
-                Zaloguj się
-              </Button>
-            </CardContent>
-          )}
-        </Box>
-      </Box>
-      <CardMedia
-        component="img"
-        sx={{ width: 151 }}
-        image="/static/images/cards/live-from-space.jpg"
-        alt="Live from space album cover"
-      />
-    </Card>
+    <Box
+      sx={{
+        position: "relative",
+        height: "calc( 100vh - 64px )",
+        overflow: "hidden",
+        p: 4,
+        pt: 8,
+        background: (theme) => theme.palette.background.darker,
+      }}
+    >
+      <IntroShape />
+      <Grid container sx={{ height: "100%" }}>
+        <Grid item xs={6} />
+        {isActivated && (
+          <Grid
+            item
+            xs={6}
+            sx={{
+              height: "100%",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              px: 6,
+            }}
+          >
+            <Typography variant="h3" sx={{ textAlign: "center", mb: 2 }}>
+              Gratulacje od teraz Twoje konto jest aktywne!
+            </Typography>
+            <Button
+              variant="contained"
+              sx={{
+                color: (theme) => theme.palette.text.light,
+                background: (theme) => theme.color.header,
+                "&:hover": {
+                  background: (theme) => theme.color.headerDarker,
+                },
+              }}
+              onClick={() => {
+                navigate("/auth/login");
+              }}
+            >
+              Zaloguj się
+            </Button>
+          </Grid>
+        )}
+      </Grid>
+    </Box>
   );
 };
 export default ActivateAccount;

@@ -630,7 +630,16 @@ export const downloadRecipe = async (
       )
       .join("")}
 			<h2 style="color:#30b470;text-align:center;">Przepis</h2>
-		${recipe.description}</div>`;
+		${
+      recipe.description.length > 1
+        ? recipe.description
+            .map(
+              (desc, idx) =>
+                `<div><h4>Krok ${idx + 1}</h4>${desc.content}</div>`
+            )
+            .join("")
+        : recipe.description[0].content
+    }</div>`;
 
     await page.setContent(html);
 

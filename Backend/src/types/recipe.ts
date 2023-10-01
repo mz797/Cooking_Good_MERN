@@ -7,7 +7,7 @@ export interface RecipeType {
   difficulty: number;
   ingredients: { name: string; amount: string }[];
   personCount: number;
-  description: string[];
+  description: { content: string }[];
   shortDescription: string;
   addedAt: Date;
   creator: any;
