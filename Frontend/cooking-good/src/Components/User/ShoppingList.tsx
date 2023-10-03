@@ -1,5 +1,6 @@
 import { TUser } from "../../types/user/TUser";
 import {
+  Box,
   Button,
   Checkbox,
   Dialog,
@@ -15,8 +16,6 @@ import {
   Typography,
 } from "@mui/material";
 import { useState } from "react";
-import { useSelector } from "react-redux";
-import { RootState } from "../../store/store";
 import EmptyState from "../common/EmptyState";
 
 const ShoppingList = ({
@@ -26,7 +25,6 @@ const ShoppingList = ({
   onDelete,
   onDownload,
 }: myProps) => {
-  const token = useSelector((state: RootState) => state.auth.token);
   const [selectedIngredients, setSelectedIngredients] = useState<string[] | []>(
     []
   );
@@ -42,6 +40,7 @@ const ShoppingList = ({
   const handleDelete = async () => {
     onDelete(selectedIngredients);
     setSelectedIngredients([]);
+    onClose();
   };
 
   return (
@@ -50,7 +49,7 @@ const ShoppingList = ({
       <DialogContent>
         <List sx={{ width: 500, maxHeight: 400, overflowY: "scroll" }}>
           {user.shoppingList.map((i, index) => (
-            <>
+            <Box key={index}>
               <ListItem key={index} sx={{ p: 0 }}>
                 <ListItemButton onClick={() => handleIngredientSelect(i.id)}>
                   <ListItemIcon>
@@ -94,7 +93,7 @@ const ShoppingList = ({
                 </ListItemButton>
               </ListItem>
               <Divider />
-            </>
+            </Box>
           ))}
           {user.shoppingList.length === 0 && (
             <EmptyState message="Brak zapisanych składników" />

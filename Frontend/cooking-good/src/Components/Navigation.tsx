@@ -166,9 +166,7 @@ const Navigation = () => {
                   >
                     Panel użytkownika
                   </MenuItem>
-                  <MenuItem component={MenuLink} to="/cart">
-                    Lista Zakupów
-                  </MenuItem>
+
                   <MenuItem component={MenuLink} to="/planner">
                     Planer
                   </MenuItem>

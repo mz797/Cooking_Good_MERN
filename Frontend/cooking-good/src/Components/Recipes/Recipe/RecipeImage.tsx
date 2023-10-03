@@ -30,22 +30,24 @@ const RecipeImage = ({
   showName = true,
   imageStyle,
   infoStyle,
+  showLikes = true,
 }: myProps) => {
   return (
     <Image
       sx={{
-        backgroundImage: `url(http://localhost:8080/${recipe.image.replace(
-          "\\",
-          "/"
-        )})`,
+        backgroundImage: !!recipe.image
+          ? `url(http://localhost:8080/${recipe.image.replace("\\", "/")})`
+          : "",
         ...imageStyle,
       }}
     >
-      <ViewsAndLikes
-        sx={{ alignSelf: "end" }}
-        views={recipe.visitCount}
-        likes={recipe.likes.length}
-      />
+      {showLikes && (
+        <ViewsAndLikes
+          sx={{ alignSelf: "end" }}
+          views={recipe.visitCount}
+          likes={recipe.likes?.length}
+        />
+      )}
       <InfoBox sx={{ p: 1, ...infoStyle }}>
         {showName && (
           <Typography
@@ -89,4 +91,5 @@ type myProps = {
   showName?: boolean;
   imageStyle?: object;
   infoStyle?: object;
+  showLikes?: boolean;
 };

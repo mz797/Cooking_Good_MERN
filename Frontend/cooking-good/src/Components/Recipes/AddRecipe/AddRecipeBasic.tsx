@@ -134,8 +134,8 @@ const AddRecipeBasic = ({
               message: "Pole jest wymagane",
             },
             maxLength: {
-              value: 150,
-              message: "Krótki opis może mieć maksymalnie 150 znaków",
+              value: 250,
+              message: "Krótki opis może mieć maksymalnie 250 znaków",
             },
           })}
           sx={{ mb: 2 }}

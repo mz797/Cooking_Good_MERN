@@ -79,7 +79,9 @@ export const getSingleUser = async (
   let user: IUser | null;
 
   try {
-    user = await User.findById(userId, "-password").populate("recipes");
+    user = await User.findById(userId, "-password")
+      .populate("recipes")
+      .populate("favorites");
   } catch (err) {
     console.log("getSingleUser", err);
     const error: HttpError = new HttpError(
@@ -478,7 +480,7 @@ export const updateUserImage = async (
   let user: IUser | null;
 
   try {
-    user = await User.findById(id).populate("recipes");
+    user = await User.findById(id).populate("recipes").populate("favorites");
   } catch (err) {
     console.log("updateUserImage", err);
     const error: HttpError = new HttpError(
@@ -546,7 +548,7 @@ export const updateUserDescription = async (
 
   let user: IUser | null;
   try {
-    user = await User.findById(id).populate("recipes");
+    user = await User.findById(id).populate("recipes").populate("favorites");
   } catch (err) {
     console.log("updateUserRole", err);
     const error: HttpError = new HttpError(
@@ -846,7 +848,9 @@ export const deleteFromShoppingList = async (
 
   let user: IUser | null;
   try {
-    user = await User.findById(userId);
+    user = await User.findById(userId)
+      .populate("recipes")
+      .populate("favorites");
   } catch (err) {
     console.log("deleteFromShoppingList", err);
     const error: HttpError = new HttpError(
@@ -907,7 +911,7 @@ export const downloadShoppingList = async (
 
   let user: IUser | null;
   try {
-    user = await User.findById(userId);
+    user = await User.findById(userId).populate("favorites");
 
     if (!user) {
       const error: HttpError = new HttpError(

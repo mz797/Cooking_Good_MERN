@@ -41,6 +41,7 @@ import CommentImage from "../../Components/Recipes/Recipe/Details/CommentImage";
 import LocalActivityIcon from "@mui/icons-material/LocalActivity";
 import { Masonry } from "@mui/lab";
 import StepByStep from "../../Components/Recipes/Recipe/StepByStep";
+import { useNotification } from "../../hooks/notification-hook";
 
 type CommentType = {
   content: string;
@@ -53,6 +54,7 @@ const IconButton = styled(Button)(({ theme }) => ({
 }));
 
 const RecipeDetailsPage = () => {
+  const { displayNotification } = useNotification();
   const { id } = useParams();
   const token = useSelector((state: RootState) => state.auth.token);
   const user = useSelector((state: RootState) => state.auth.user);
@@ -91,6 +93,18 @@ const RecipeDetailsPage = () => {
       })
       .then((res) => {
         navigate("/");
+        displayNotification({
+          message: `Usunięto przepis.`,
+          type: "success",
+          open: true,
+        });
+      })
+      .catch((err) => {
+        displayNotification({
+          message: `Nie udało się usunąć przepisu.`,
+          type: "error",
+          open: true,
+        });
       });
   };
   const handleEditRecipe = () => {
@@ -116,6 +130,19 @@ const RecipeDetailsPage = () => {
           setRecipe(res.data.recipe);
           console.log(res);
           setLikeIsLoading(false);
+          displayNotification({
+            message: `Dodano przepis '${res.data.recipe?.name}' do ulubionych`,
+            type: "success",
+            open: true,
+          });
+        })
+        .catch((err) => {
+          displayNotification({
+            message: `Nie udało się dodać przepisu do ulubionych`,
+            type: "error",
+            open: true,
+          });
+          setLikeIsLoading(false);
         });
     } else {
       setLoginDialogContent(
@@ -138,6 +165,18 @@ const RecipeDetailsPage = () => {
           setRecipe(res.data.recipe);
           console.log(res);
           setLikeIsLoading(false);
+          displayNotification({
+            message: `Usunięto przepis '${res.data.recipe?.name}' z ulubionych`,
+            type: "success",
+            open: true,
+          });
+        })
+        .catch((err) => {
+          displayNotification({
+            message: `Nie udało się usunąć przepisu z ulubionych`,
+            type: "error",
+            open: true,
+          });
         });
     } else {
       setLoginDialogContent(
@@ -158,7 +197,17 @@ const RecipeDetailsPage = () => {
         { headers: { Authorization: "Bearer " + token } }
       );
       setRecipe(response.data.recipe);
+      displayNotification({
+        message: `Dodano ocenę do przepisu '${response.data.recipe.name}'.`,
+        type: "success",
+        open: true,
+      });
     } catch (err) {
+      displayNotification({
+        message: `Nie udało się dodać oceny do przepisu.`,
+        type: "error",
+        open: true,
+      });
       console.log(err);
     }
   };
@@ -187,7 +236,17 @@ const RecipeDetailsPage = () => {
 
       setRecipe(response.data.recipe);
       reset();
+      displayNotification({
+        message: `Dodano komentarz do przepisu.`,
+        type: "success",
+        open: true,
+      });
     } catch (err) {
+      displayNotification({
+        message: `Nie udało się dodać komentarza do przepisu.`,
+        type: "error",
+        open: true,
+      });
       console.log(err);
     }
   };
@@ -211,25 +270,51 @@ const RecipeDetailsPage = () => {
   };
 
   const handleSaveCommentImage = async (formData: FormData) => {
-    if (user) {
-      formData.append("creator", user.userId);
-    }
-    const res = await axios.put(
-      `http://localhost:8080/recipe/comment-image/${recipe?.id}`,
-      formData,
-      { headers: { Authorization: "Bearer " + token } }
-    );
-    if (res.statusText === "OK") {
-      setRecipe(res.data.recipe);
+    try {
+      if (user) {
+        formData.append("creator", user.userId);
+      }
+      const res = await axios.put(
+        `http://localhost:8080/recipe/comment-image/${recipe?.id}`,
+        formData,
+        { headers: { Authorization: "Bearer " + token } }
+      );
+      if (res.statusText === "OK") {
+        setRecipe(res.data.recipe);
+        displayNotification({
+          message: `Dodano zdjęcie do przepisu '${res.data.recipe?.name}'.`,
+          type: "success",
+          open: true,
+        });
+      }
+    } catch (err) {
+      displayNotification({
+        message: `Nie udało się dodać zdjęcia do przepisu.`,
+        type: "error",
+        open: true,
+      });
     }
   };
   const handleImageDelete = async (id: string) => {
-    const res = await axios.delete(
-      `http://localhost:8080/recipe/comment-image/${recipe?.id}/${id}`,
-      { headers: { Authorization: "Bearer " + token } }
-    );
-    if (res.statusText === "OK") {
-      setRecipe(res.data.recipe);
+    try {
+      const res = await axios.delete(
+        `http://localhost:8080/recipe/comment-image/${recipe?.id}/${id}`,
+        { headers: { Authorization: "Bearer " + token } }
+      );
+      if (res.statusText === "OK") {
+        setRecipe(res.data.recipe);
+        displayNotification({
+          message: `Usunięto zdjęcie z przepisu '${res.data.recipe?.name}'.`,
+          type: "success",
+          open: true,
+        });
+      }
+    } catch (err) {
+      displayNotification({
+        message: `Nie udało się usunąć zdjęcia z przepisu.`,
+        type: "error",
+        open: true,
+      });
     }
   };
 
@@ -254,7 +339,6 @@ const RecipeDetailsPage = () => {
     }
     //shopping-list
     else {
-      console.log("ingredients", selectedIngredients);
       try {
         const response = await axios.put(
           `http://localhost:8080/users/shopping-list/${user?.userId}`,
@@ -265,8 +349,18 @@ const RecipeDetailsPage = () => {
         );
         if (response.status === 200) {
           setSelectedIngredients([]);
+          displayNotification({
+            message: `Dodano składniki do listy zakupów.`,
+            type: "success",
+            open: true,
+          });
         }
       } catch (err) {
+        displayNotification({
+          message: `Nie udało się dodać składników do listy zakupów.`,
+          type: "error",
+          open: true,
+        });
         console.log(err);
       }
     }
@@ -452,7 +546,7 @@ const RecipeDetailsPage = () => {
                     Składniki
                   </Typography>
                   {recipe.ingredients.map((i, index) => (
-                    <>
+                    <Box key={index}>
                       <ListItem key={index} sx={{ p: 0 }}>
                         <ListItemButton
                           onClick={() =>
@@ -505,7 +599,7 @@ const RecipeDetailsPage = () => {
                         </ListItemButton>
                       </ListItem>
                       <Divider />
-                    </>
+                    </Box>
                   ))}
                   <Stack alignItems="center">
                     <Button
@@ -548,7 +642,11 @@ const RecipeDetailsPage = () => {
                 </Paper>
               </Grid>
               <Grid item xs={12} md={6.5}>
-                <Stack direction="row" justifyContent="space-between">
+                <Stack
+                  direction="row"
+                  justifyContent="space-between"
+                  sx={{ mb: 2 }}
+                >
                   <Typography
                     variant="h4"
                     sx={{
@@ -562,22 +660,23 @@ const RecipeDetailsPage = () => {
                       variant={"contained"}
                       endIcon={<LocalActivityIcon />}
                       onClick={() => setOpenStepByStep(true)}
+                      sx={{ color: (theme) => theme.palette.text.light }}
                     >
                       Krok po Kroku
                     </Button>
                   )}
                 </Stack>
                 {recipe.description.map((desc, idx) => (
-                  <>
+                  <Box key={idx}>
                     {recipe.description.length > 1 && (
-                      <Typography variant="h5">Krok {idx}</Typography>
+                      <Typography variant="h5">Krok {idx + 1}</Typography>
                     )}
                     <div
                       dangerouslySetInnerHTML={{
                         __html: desc.content,
                       }}
                     />
-                  </>
+                  </Box>
                 ))}
               </Grid>
             </Grid>
@@ -689,17 +788,17 @@ const RecipeDetailsPage = () => {
   );
 
   /* <Grid
-                                                                                                                                                                                                                                                                                                                                                                                  <Grid
-                                                                                                                                                                                                                                                                                                                                                                                  item
-                                                                                                                                                                                                                                                                                                                                                                                  xs={12}
-                                                                                                                                                                                                                                                                                                                                                                                  sx={{ mt: 2, borderTop: "1px solid #999" }}>
-                                                                                                                                                                                                                                                                                                                                                                                  <Stack direction="row" alignItems="center">
-                                                                                                                                                                                                                                                                                                                                                                                  <ChatIcon sx={{ mr: 2, fontSize: 32 }} />
-                                                                                                                                                                                                                                                                                                                                                                                  <Typography variant="h4">{`Komentarze(${recipe.comments.length})`}</Typography>
-                                                                                                                                                                                                                                                                                                                                                                                  </Stack>
-                                                                                                                                    
-                                                                                                                                                                                                                                                                                                                                                                                          </Grid>
-                                                                                                                                                                                                                                                                                                                                                                                      </Grid> */
+                                                                                                                                                                                                                                                                                                                                                                                                              <Grid
+                                                                                                                                                                                                                                                                                                                                                                                                              item
+                                                                                                                                                                                                                                                                                                                                                                                                              xs={12}
+                                                                                                                                                                                                                                                                                                                                                                                                              sx={{ mt: 2, borderTop: "1px solid #999" }}>
+                                                                                                                                                                                                                                                                                                                                                                                                              <Stack direction="row" alignItems="center">
+                                                                                                                                                                                                                                                                                                                                                                                                              <ChatIcon sx={{ mr: 2, fontSize: 32 }} />
+                                                                                                                                                                                                                                                                                                                                                                                                              <Typography variant="h4">{`Komentarze(${recipe.comments.length})`}</Typography>
+                                                                                                                                                                                                                                                                                                                                                                                                              </Stack>
+                                                                                                                                                                
+                                                                                                                                                                                                                                                                                                                                                                                                                      </Grid>
+                                                                                                                                                                                                                                                                                                                                                                                                                  </Grid> */
 };
 export default RecipeDetailsPage;
 const Image = styled(Box)`

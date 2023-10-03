@@ -10,9 +10,10 @@ const RecipeList = ({
   emptyStateMessage,
   divider,
   titleStyles,
+  sx,
 }: myProps) => {
   return (
-    <Box>
+    <Box sx={sx}>
       {!!title && (
         <Typography
           variant="h4"
@@ -32,8 +33,8 @@ const RecipeList = ({
         useFlexGap
         flexWrap="wrap"
       >
-        {recipes.map((item: RecipeType) => (
-          <Recipe key={item._id} recipe={item} />
+        {recipes.map((item: RecipeType, index: number) => (
+          <Recipe key={item._id + index} recipe={item} />
         ))}
         {recipes.length === 0 && <EmptyState message={emptyStateMessage} />}
       </Stack>
@@ -48,4 +49,5 @@ type myProps = {
   emptyStateMessage: string;
   divider?: boolean;
   titleStyles?: object;
+  sx?: object;
 };

@@ -15,6 +15,6 @@ export type TUser = {
   image: string;
   description: string;
   recipes: RecipeType[];
-  favourites: RecipeType[];
+  favorites: RecipeType[];
   shoppingList: { name: string; amount: string; id: string }[];
 };

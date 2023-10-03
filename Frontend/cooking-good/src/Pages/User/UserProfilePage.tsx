@@ -105,6 +105,9 @@ const UserProfilePage = () => {
       });
   };
 
+  console.log(auth?.user?.userId === userId);
+  console.log(user);
+
   return (
     <>
       {!!user && (
@@ -261,6 +264,16 @@ const UserProfilePage = () => {
               recipes={user.recipes}
               emptyStateMessage={`Użytkownik ${user.name} nie dodał jeszcze żadnych przepisów.`}
             />
+
+            {auth?.user?.userId === userId && user.favorites?.length > 0 && (
+              <RecipeList
+                sx={{ mt: 4 }}
+                divider
+                title="Ulubione"
+                recipes={user.favorites}
+                emptyStateMessage={`Użytkownik ${user.name} nie dodał jeszcze żadnych przepisów.`}
+              />
+            )}
           </Container>
         </>
       )}

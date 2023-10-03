@@ -1,7 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
 import RecipesPage from "../Pages/Recipe/RecipesPage";
 import RootPage from "../Pages/Root";
-import Cart from "../Pages/Cart";
 import Planner from "../Pages/Planner";
 import RecipeDetailsPage from "../Pages/Recipe/RecipeDetailsPage";
 import AddRecipePage from "../Pages/Recipe/AddRecipePage";
@@ -51,7 +50,6 @@ export const router = createBrowserRouter([
       { path: "recipes/:id", element: <RecipeDetailsPage /> },
       { path: "add-recipe", element: <AddRecipePage /> },
       { path: "edit-recipe/:id", element: <AddRecipePage /> },
-      { path: "cart", element: <Cart /> },
       { path: "planner", element: <Planner /> },
       { path: "categories", element: <CategoriesPage /> },
       { path: "", element: <RecipesPage /> },
@@ -82,7 +80,6 @@ export const notAuthRouter = createBrowserRouter([
       { path: "posts", element: <PostListPage /> },
       { path: "user-profile/:userId", element: <UserProfilePage /> },
       { path: "users", element: <UsersPage /> },
-      { path: "cart", element: <Cart /> },
       { path: "planner", element: <Planner /> },
       { path: "recipes/:id", element: <RecipeDetailsPage /> },
       { path: "", element: <RecipesPage /> },

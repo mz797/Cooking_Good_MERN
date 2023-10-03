@@ -86,6 +86,8 @@ const AddRecipe = ({ recipe }: myProps) => {
       setValue("shortDescription", editedRecipe.shortDescription);
       setValue("personCount", editedRecipe.personCount);
       setValue("image", editedRecipe.image);
+      setStep(2);
+      setStep(1);
     } else {
       reset();
     }
@@ -177,7 +179,6 @@ const AddRecipe = ({ recipe }: myProps) => {
   const handlePrevtStep = () => {
     setStep((prev) => prev - 1);
   };
-  console.log(watch("name"));
 
   return (
     <Container sx={{ mt: 4 }}>

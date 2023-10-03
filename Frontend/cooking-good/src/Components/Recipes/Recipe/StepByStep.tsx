@@ -1,9 +1,11 @@
 import {
+  Box,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
   Divider,
+  Grid,
   IconButton,
   ListItem,
   Paper,
@@ -16,6 +18,7 @@ import { RecipeType } from "../../../types/recipe-types";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import React, { useState } from "react";
 import DescriptionIcon from "@mui/icons-material/Description";
+import RecipeImage from "./RecipeImage";
 
 const StepByStep = ({ recipe, open, onClose }: myProps) => {
   const [step, setStep] = useState<number>(0);
@@ -34,21 +37,19 @@ const StepByStep = ({ recipe, open, onClose }: myProps) => {
         direction="row"
         justifyContent="space-between"
         alignItems="center"
-        sx={{ px: 2 }}
+        sx={{ px: 2, borderBottom: "1px solid #999" }}
       >
-        <DialogTitle sx={{ width: 800 }}>{recipe.name}</DialogTitle>
-        <IconButton onClick={handleClick}>
+        <DialogTitle
+          sx={{ width: 800, color: (theme) => theme.palette.primary.main }}
+        >
+          {recipe.name}
+        </DialogTitle>
+        <IconButton
+          onClick={handleClick}
+          sx={{ color: (theme) => theme.palette.primary.main }}
+        >
           <DescriptionIcon />
         </IconButton>
-        {/*<Popper*/}
-        {/*  open={Boolean(anchorEl)}*/}
-        {/*  anchorEl={anchorEl}*/}
-        {/*  sx={{ zIndex: 99999 }}*/}
-        {/*>*/}
-        {/*  <Box sx={{ border: 1, p: 1, bgcolor: "background.paper" }}>*/}
-        {/*    The content of the Popper.*/}
-        {/*  </Box>*/}
-        {/*</Popper>*/}
         <Popover
           open={Boolean(anchorEl)}
           anchorEl={anchorEl}
@@ -79,7 +80,7 @@ const StepByStep = ({ recipe, open, onClose }: myProps) => {
               Składniki
             </Typography>
             {recipe.ingredients.map((i, index) => (
-              <>
+              <Box key={index}>
                 <ListItem key={index} sx={{ p: 0 }}>
                   <Stack
                     direction="row"
@@ -114,17 +115,30 @@ const StepByStep = ({ recipe, open, onClose }: myProps) => {
                   </Stack>
                 </ListItem>
                 <Divider />
-              </>
+              </Box>
             ))}
           </Paper>
         </Popover>
       </Stack>
       <DialogContent>
-        <div
-          dangerouslySetInnerHTML={{
-            __html: recipe.description[step].content,
-          }}
-        />
+        <Grid container>
+          <Grid item xs={7}>
+            <div
+              dangerouslySetInnerHTML={{
+                __html: recipe.description[step].content,
+              }}
+            />
+          </Grid>
+          <Grid item xs={5}>
+            <RecipeImage
+              recipe={recipe}
+              showName={false}
+              imageStyle={{ height: "auto" }}
+              infoStyle={{ display: "none" }}
+              showLikes={false}
+            />
+          </Grid>
+        </Grid>
       </DialogContent>
       <DialogActions>
         <Stack direction="row" justifyContent={"center"} sx={{ width: "100%" }}>
