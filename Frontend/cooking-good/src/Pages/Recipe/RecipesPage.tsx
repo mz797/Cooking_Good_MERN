@@ -1,24 +1,29 @@
 import React, { useEffect, useState } from "react";
 import { Box, Button, Container, Stack, Typography } from "@mui/material";
-import axios from "axios";
-import { RecipeType } from "../../types/recipe-types";
 import CategoryLinks from "../../Components/Category/CategoryLinks";
 import RecipeList from "../../Components/Recipes/Recipe/RecipeList";
 import { useSelector } from "react-redux";
-import { RootState } from "../../store/store";
+import { RootState, useAppDispatch, useAppSelector } from "../../store/store";
 import NewsletterForm from "../../Components/NewsletterForm";
 import EastIcon from "@mui/icons-material/East";
 import { Link } from "react-router-dom";
+import LotterySection from "../../Components/Recipes/Lottery/LotterySection";
+import { loadRecipes } from "../../store/actions/RecipesActions";
+import { RecipeType } from "../../types/recipe-types";
 
 const RecipesPage = () => {
+  const dispatch = useAppDispatch();
   const user = useSelector((state: RootState) => state.auth.user);
 
-  const [recipeList, setRecipeList] = useState<RecipeType[] | []>([]);
+  const recipes = useAppSelector((state) => state.recipes.recipesList);
+  const [recipeList, setRecipeList] = useState<RecipeType[]>([...recipes]);
 
   useEffect(() => {
-    axios.get("http://localhost:8080/recipe/").then((res) => {
-      setRecipeList(res.data.recipes);
-    });
+    setRecipeList([...recipes]);
+  }, [recipes]);
+
+  useEffect(() => {
+    dispatch(loadRecipes());
   }, []);
 
   return (
@@ -42,42 +47,47 @@ const RecipesPage = () => {
           background: (theme) => theme.palette.background.darker,
         }}
       >
-        <Container sx={{ mb: 4, mt: 4, p: 0, py: 1, pb: 5 }} maxWidth={"xl"}>
-          <RecipeList
-            title="Ostatnio dodane"
-            recipes={recipeList}
-            emptyStateMessage={`Brak przepisów`}
-            titleStyles={{ my: 4 }}
-          />
-          {recipeList.length > 0 && (
-            <Stack alignItems="end">
-              <Button
-                endIcon={<EastIcon />}
-                component={Link}
-                to="/recipes-list"
-              >
-                Zobacz wszystkie
-              </Button>
-            </Stack>
-          )}
-        </Container>
+        {recipeList.length > 0 && (
+          <Container sx={{ mt: 4, p: 0, py: 1, pb: 5 }} maxWidth={"xl"}>
+            <RecipeList
+              title="Ostatnio dodane"
+              recipes={recipeList}
+              emptyStateMessage={`Brak przepisów`}
+              titleStyles={{ my: 4 }}
+            />
+            {recipeList.length > 0 && (
+              <Stack alignItems="end">
+                <Button
+                  endIcon={<EastIcon />}
+                  component={Link}
+                  to="/recipes-list"
+                >
+                  Zobacz wszystkie
+                </Button>
+              </Stack>
+            )}
+          </Container>
+        )}
       </Box>
+      <LotterySection />
       <Box
         sx={{
           width: "100%",
         }}
       >
         <Container sx={{ mb: 4, mt: 4, p: 0, py: 1, pb: 5 }} maxWidth={"xl"}>
-          <RecipeList
-            title="Najczęściej odwiedzane"
-            recipes={recipeList
-              .sort(
-                (a: RecipeType, b: RecipeType) => b.visitCount - a.visitCount
-              )
-              .slice(0, 3)}
-            emptyStateMessage={`Brak przepisów`}
-            titleStyles={{ my: 4 }}
-          />
+          {recipeList.length > 0 && (
+            <RecipeList
+              title="Najczęściej odwiedzane"
+              recipes={recipeList
+                .sort(
+                  (a: RecipeType, b: RecipeType) => b.visitCount - a.visitCount
+                )
+                .slice(0, 3)}
+              emptyStateMessage={`Brak przepisów`}
+              titleStyles={{ my: 4 }}
+            />
+          )}
         </Container>
       </Box>
       <Box
@@ -87,17 +97,19 @@ const RecipesPage = () => {
         }}
       >
         <Container sx={{ mt: 4, p: 0, py: 1, pb: 5 }} maxWidth={"xl"}>
-          <RecipeList
-            title="Najbardziej lubiane"
-            recipes={recipeList
-              .sort(
-                (a: RecipeType, b: RecipeType) =>
-                  b.likes.length - a.likes.length
-              )
-              .slice(0, 3)}
-            emptyStateMessage={`Brak przepisów`}
-            titleStyles={{ my: 4 }}
-          />
+          {recipeList.length > 0 && (
+            <RecipeList
+              title="Najbardziej lubiane"
+              recipes={recipeList
+                .sort(
+                  (a: RecipeType, b: RecipeType) =>
+                    b.likes.length - a.likes.length
+                )
+                .slice(0, 3)}
+              emptyStateMessage={`Brak przepisów`}
+              titleStyles={{ my: 4 }}
+            />
+          )}
         </Container>
       </Box>
       <NewsletterForm email={!!user ? user.email : undefined} />

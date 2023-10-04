@@ -5,21 +5,26 @@ import { RecipeType } from "../../types/recipe-types";
 import axios from "axios";
 import { ICategory } from "../../types/category-types";
 import RecipeFilters from "../../Components/Recipes/Recipe/Filters/RecipeFilters";
+import { useAppDispatch, useAppSelector } from "../../store/store";
+import { loadRecipes } from "../../store/actions/RecipesActions";
 
 const RecipesListPage = () => {
-  const [recipeList, setRecipeList] = useState<RecipeType[] | []>([]);
+  const dispatch = useAppDispatch();
+  const recipes = useAppSelector((state) => state.recipes.recipesList);
+  const [recipeList, setRecipeList] = useState<RecipeType[] | []>([...recipes]);
   const [categoriesList, setCategoriesList] = useState<ICategory[] | []>([]);
   const [filteredRecipes, setFilteredRecipes] = useState<RecipeType[] | []>([]);
 
   useEffect(() => {
-    axios.get("http://localhost:8080/recipe").then((res) => {
-      setRecipeList(res.data.recipes);
-    });
-
+    dispatch(loadRecipes());
     axios.get("http://localhost:8080/category").then((res) => {
       setCategoriesList(res.data.categories);
     });
   }, []);
+
+  useEffect(() => {
+    setRecipeList([...recipes]);
+  }, [recipes]);
 
   return (
     <Box
