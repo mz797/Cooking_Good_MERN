@@ -16,10 +16,33 @@ const notificationSlice = createSlice({
       ...action.payload,
       open: true,
     }),
+    addSuccessNotification: (
+      state,
+      action: PayloadAction<{ message: string }>
+    ) => ({
+      ...initialState,
+      ...action.payload,
+      type: "success",
+      open: true,
+    }),
+    addErrorNotification: (
+      state,
+      action: PayloadAction<{ message: string }>
+    ) => ({
+      ...initialState,
+      ...action.payload,
+      type: "error",
+      open: true,
+    }),
     clearNotification: (state) => ({ ...state, open: false }),
   },
 });
 
-export const { addNotification, clearNotification } = notificationSlice.actions;
+export const {
+  addNotification,
+  addErrorNotification,
+  addSuccessNotification,
+  clearNotification,
+} = notificationSlice.actions;
 
 export default notificationSlice.reducer;

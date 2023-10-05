@@ -22,7 +22,7 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { RecipeType } from "../../types/recipe-types";
-import { RootState } from "../../store/store";
+import { RootState, useAppDispatch } from "../../store/store";
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import RateDialog from "../../Components/Recipes/Recipe/Details/RateDialog";
 import DescriptionIcon from "@mui/icons-material/Description";
@@ -42,6 +42,17 @@ import LocalActivityIcon from "@mui/icons-material/LocalActivity";
 import { Masonry } from "@mui/lab";
 import StepByStep from "../../Components/Recipes/Recipe/StepByStep";
 import { useNotification } from "../../hooks/notification-hook";
+import {
+  addCommentImage,
+  addCommentToRecipe,
+  addIngredientsToShoppingList,
+  addRateToRecipe,
+  addRecipeToFavorites,
+  deleteCommentImage,
+  deleteRecipe,
+  deleteRecipeFromFavorites,
+  loadSingleRecipe,
+} from "../../store/actions/RecipesActions";
 
 type CommentType = {
   content: string;
@@ -54,12 +65,16 @@ const IconButton = styled(Button)(({ theme }) => ({
 }));
 
 const RecipeDetailsPage = () => {
+  const dispatch = useAppDispatch();
   const { displayNotification } = useNotification();
   const { id } = useParams();
   const token = useSelector((state: RootState) => state.auth.token);
   const user = useSelector((state: RootState) => state.auth.user);
+  const recipeDetails = useSelector(
+    (state: RootState) => state.recipes.recipeDetail
+  );
   const navigate = useNavigate();
-  const [recipe, setRecipe] = useState<RecipeType | null>();
+  const [recipe, setRecipe] = useState<RecipeType | null>(recipeDetails);
   const [openRateDialog, setOpenRateDialog] = useState<boolean>(false);
   const [loginDialogOpen, setLoginDialogOpen] = useState<boolean>(false);
   const [loginDialogContent, setLoginDialogContent] = useState<string>("");
@@ -81,31 +96,15 @@ const RecipeDetailsPage = () => {
   } = useForm<CommentType>({ mode: "onTouched" });
 
   useEffect(() => {
-    axios.get(`http://localhost:8080/recipe/${id}`).then((res) => {
-      setRecipe(res.data.recipe);
-    });
+    if (id) dispatch(loadSingleRecipe(id));
   }, [id]);
 
+  useEffect(() => {
+    setRecipe(recipeDetails);
+  }, [recipeDetails]);
+
   const handleDeleteRecipe = async () => {
-    axios
-      .delete(`http://localhost:8080/recipe/${id}`, {
-        headers: { Authorization: "Bearer " + token },
-      })
-      .then((res) => {
-        navigate("/");
-        displayNotification({
-          message: `Usunięto przepis.`,
-          type: "success",
-          open: true,
-        });
-      })
-      .catch((err) => {
-        displayNotification({
-          message: `Nie udało się usunąć przepisu.`,
-          type: "error",
-          open: true,
-        });
-      });
+    if (id) dispatch(deleteRecipe(id, token)).then(() => navigate("/"));
   };
   const handleEditRecipe = () => {
     navigate("/edit-recipe/" + id);
@@ -121,29 +120,11 @@ const RecipeDetailsPage = () => {
   };
   const handleFavorite = () => {
     if (!!user) {
-      setLikeIsLoading(true);
-      axios
-        .get(`http://localhost:8080/users/add-favorite/${user.userId}/${id}`, {
-          headers: { Authorization: "Bearer " + token },
-        })
-        .then((res) => {
-          setRecipe(res.data.recipe);
-          console.log(res);
-          setLikeIsLoading(false);
-          displayNotification({
-            message: `Dodano przepis '${res.data.recipe?.name}' do ulubionych`,
-            type: "success",
-            open: true,
-          });
-        })
-        .catch((err) => {
-          displayNotification({
-            message: `Nie udało się dodać przepisu do ulubionych`,
-            type: "error",
-            open: true,
-          });
-          setLikeIsLoading(false);
-        });
+      if (id && user && user.userId && token) {
+        setLikeIsLoading(true);
+        dispatch(addRecipeToFavorites(id, user.userId, token));
+        setLikeIsLoading(false);
+      }
     } else {
       setLoginDialogContent(
         "Jedynie zalogowani użytkownicy mogą dodać przepis do listy ulubionych."
@@ -153,31 +134,11 @@ const RecipeDetailsPage = () => {
   };
   const handleDeleteFavorite = () => {
     if (!!user) {
-      setLikeIsLoading(true);
-      axios
-        .get(
-          `http://localhost:8080/users/delete-favorite/${user.userId}/${id}`,
-          {
-            headers: { Authorization: "Bearer " + token },
-          }
-        )
-        .then((res) => {
-          setRecipe(res.data.recipe);
-          console.log(res);
-          setLikeIsLoading(false);
-          displayNotification({
-            message: `Usunięto przepis '${res.data.recipe?.name}' z ulubionych`,
-            type: "success",
-            open: true,
-          });
-        })
-        .catch((err) => {
-          displayNotification({
-            message: `Nie udało się usunąć przepisu z ulubionych`,
-            type: "error",
-            open: true,
-          });
-        });
+      if (id && user && user.userId && token) {
+        setLikeIsLoading(true);
+        dispatch(deleteRecipeFromFavorites(id, user.userId, token));
+        setLikeIsLoading(false);
+      }
     } else {
       setLoginDialogContent(
         "Jedynie zalogowani użytkownicy mogą dodać przepis do listy ulubionych."
@@ -189,27 +150,8 @@ const RecipeDetailsPage = () => {
   const handleRateSubmit = async (value: number) => {
     setOpenRateDialog(false);
 
-    try {
-      const response = await axios.put(
-        `http://localhost:8080/recipe/rate/${id}`,
-        { rate: { rate: value, creator: user?.userId } },
-
-        { headers: { Authorization: "Bearer " + token } }
-      );
-      setRecipe(response.data.recipe);
-      displayNotification({
-        message: `Dodano ocenę do przepisu '${response.data.recipe.name}'.`,
-        type: "success",
-        open: true,
-      });
-    } catch (err) {
-      displayNotification({
-        message: `Nie udało się dodać oceny do przepisu.`,
-        type: "error",
-        open: true,
-      });
-      console.log(err);
-    }
+    if (id && user && user.userId && token)
+      dispatch(addRateToRecipe(id, value, user.userId, token));
   };
 
   const onCommentSubmit = async (data: CommentType) => {
@@ -220,34 +162,14 @@ const RecipeDetailsPage = () => {
       setLoginDialogOpen(true);
       return;
     }
-    try {
-      const response = await axios.put(
-        `http://localhost:8080/recipe/comment/${id}`,
-        {
-          comment: {
-            content: data.content,
-            creator: user?.userId,
-            reports: [],
-            addedAt: new Date(),
-          },
-        },
-        { headers: { Authorization: "Bearer " + token } }
-      );
-
-      setRecipe(response.data.recipe);
-      reset();
-      displayNotification({
-        message: `Dodano komentarz do przepisu.`,
-        type: "success",
-        open: true,
-      });
-    } catch (err) {
-      displayNotification({
-        message: `Nie udało się dodać komentarza do przepisu.`,
-        type: "error",
-        open: true,
-      });
-      console.log(err);
+    if (id && user && user.userId && token) {
+      const comment = {
+        content: data.content,
+        creator: user?.userId,
+        reports: [],
+        addedAt: new Date(),
+      };
+      dispatch(addCommentToRecipe(id, comment, token)).then(() => reset());
     }
   };
 
@@ -270,52 +192,13 @@ const RecipeDetailsPage = () => {
   };
 
   const handleSaveCommentImage = async (formData: FormData) => {
-    try {
-      if (user) {
-        formData.append("creator", user.userId);
-      }
-      const res = await axios.put(
-        `http://localhost:8080/recipe/comment-image/${recipe?.id}`,
-        formData,
-        { headers: { Authorization: "Bearer " + token } }
-      );
-      if (res.statusText === "OK") {
-        setRecipe(res.data.recipe);
-        displayNotification({
-          message: `Dodano zdjęcie do przepisu '${res.data.recipe?.name}'.`,
-          type: "success",
-          open: true,
-        });
-      }
-    } catch (err) {
-      displayNotification({
-        message: `Nie udało się dodać zdjęcia do przepisu.`,
-        type: "error",
-        open: true,
-      });
+    if (user && recipe?.id && token) {
+      formData.append("creator", user.userId);
+      dispatch(addCommentImage(recipe.id, formData, token));
     }
   };
   const handleImageDelete = async (id: string) => {
-    try {
-      const res = await axios.delete(
-        `http://localhost:8080/recipe/comment-image/${recipe?.id}/${id}`,
-        { headers: { Authorization: "Bearer " + token } }
-      );
-      if (res.statusText === "OK") {
-        setRecipe(res.data.recipe);
-        displayNotification({
-          message: `Usunięto zdjęcie z przepisu '${res.data.recipe?.name}'.`,
-          type: "success",
-          open: true,
-        });
-      }
-    } catch (err) {
-      displayNotification({
-        message: `Nie udało się usunąć zdjęcia z przepisu.`,
-        type: "error",
-        open: true,
-      });
-    }
+    if (recipe?.id && token) dispatch(deleteCommentImage(recipe.id, id, token));
   };
 
   const handleOpenAddImage = () => {
@@ -338,31 +221,10 @@ const RecipeDetailsPage = () => {
       return;
     }
     //shopping-list
-    else {
-      try {
-        const response = await axios.put(
-          `http://localhost:8080/users/shopping-list/${user?.userId}`,
-          {
-            ingredients: selectedIngredients,
-          },
-          { headers: { Authorization: "Bearer " + token } }
-        );
-        if (response.status === 200) {
-          setSelectedIngredients([]);
-          displayNotification({
-            message: `Dodano składniki do listy zakupów.`,
-            type: "success",
-            open: true,
-          });
-        }
-      } catch (err) {
-        displayNotification({
-          message: `Nie udało się dodać składników do listy zakupów.`,
-          type: "error",
-          open: true,
-        });
-        console.log(err);
-      }
+    else if (user && user.userId) {
+      dispatch(
+        addIngredientsToShoppingList(selectedIngredients, user.userId, token)
+      ).then(() => setSelectedIngredients([]));
     }
   };
 
@@ -786,19 +648,6 @@ const RecipeDetailsPage = () => {
       )}
     </>
   );
-
-  /* <Grid
-                                                                                                                                                                                                                                                                                                                                                                                                              <Grid
-                                                                                                                                                                                                                                                                                                                                                                                                              item
-                                                                                                                                                                                                                                                                                                                                                                                                              xs={12}
-                                                                                                                                                                                                                                                                                                                                                                                                              sx={{ mt: 2, borderTop: "1px solid #999" }}>
-                                                                                                                                                                                                                                                                                                                                                                                                              <Stack direction="row" alignItems="center">
-                                                                                                                                                                                                                                                                                                                                                                                                              <ChatIcon sx={{ mr: 2, fontSize: 32 }} />
-                                                                                                                                                                                                                                                                                                                                                                                                              <Typography variant="h4">{`Komentarze(${recipe.comments.length})`}</Typography>
-                                                                                                                                                                                                                                                                                                                                                                                                              </Stack>
-                                                                                                                                                                
-                                                                                                                                                                                                                                                                                                                                                                                                                      </Grid>
-                                                                                                                                                                                                                                                                                                                                                                                                                  </Grid> */
 };
 export default RecipeDetailsPage;
 const Image = styled(Box)`

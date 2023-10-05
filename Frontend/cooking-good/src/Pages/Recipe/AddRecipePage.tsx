@@ -11,7 +11,8 @@ import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import { RecipeType } from "../../types/recipe-types";
 import { useSelector } from "react-redux";
-import { RootState } from "../../store/store";
+import { RootState, useAppDispatch } from "../../store/store";
+import { addRecipe, editRecipe } from "../../store/actions/RecipesActions";
 
 type Inputs = {
   name: string;
@@ -29,6 +30,7 @@ type myProps = {
   recipe?: RecipeType;
 };
 const AddRecipe = ({ recipe }: myProps) => {
+  const dispatch = useAppDispatch();
   const user = useSelector((state: RootState) => state.auth.user);
   const token = useSelector((state: RootState) => state.auth.token);
   const [editedRecipe, setEditedRecipe] = useState<RecipeType | null>(null);
@@ -129,23 +131,14 @@ const AddRecipe = ({ recipe }: myProps) => {
     formData.append("time", data.time.toString());
     formData.append("creator", user ? user.userId : "");
     if (!editedRecipe) {
-      fetch("http://localhost:8080/recipe", {
-        method: "POST",
-        body: formData,
-        headers: { Authorization: "Bearer " + token },
-      }).then((res) => {
-        console.log(res);
+      dispatch(addRecipe(formData, token)).then(() => {
         navigate("/");
       });
     } else {
-      fetch(`http://localhost:8080/recipe/${param.id}`, {
-        method: "PUT",
-        body: formData,
-        headers: { Authorization: "Bearer " + token },
-      }).then((res) => {
-        console.log(res);
-        navigate("/");
-      });
+      if (param.id)
+        dispatch(editRecipe(formData, param.id, token)).then(() => {
+          navigate("/");
+        });
     }
   };
   const handleAddIngredient = () => {
