@@ -17,14 +17,21 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AddCategory from "../../../Components/Category/AddCategory";
 import { ICategory } from "../../../types/category-types";
+import { useAppDispatch, useAppSelector } from "../../../store/store";
+import { loadCategories } from "../../../store/actions/CategoryActions";
 
 const CategoriesPage = () => {
+  const dispatch = useAppDispatch();
+  const categoryList = useAppSelector((state) => state.categories.categoryList);
   const navigate = useNavigate();
   const [openAddCategory, setOpenAddCategory] = useState<boolean>(false);
   const [categories, setCategories] = useState<ICategory[]>([]);
   useEffect(() => {
-    handleCategoryAdded();
+    dispatch(loadCategories());
   }, []);
+  useEffect(() => {
+    setCategories(categoryList);
+  }, [categoryList]);
 
   const handleCategoryAdded = () => {
     axios

@@ -650,13 +650,3 @@ const RecipeDetailsPage = () => {
   );
 };
 export default RecipeDetailsPage;
-const Image = styled(Box)`
-  width: 100%;
-  height: 100%;
-  background-position: center;
-  background-size: cover;
-  transition: transform 0.3s;
-  overflow: hidden;
-  display: flex;
-  align-items: end;
-`;
