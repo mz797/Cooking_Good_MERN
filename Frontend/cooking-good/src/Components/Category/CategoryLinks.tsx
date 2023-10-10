@@ -1,24 +1,17 @@
 import { Box, Stack, Typography } from "@mui/material";
-import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
+import { loadCategories } from "../../store/actions/CategoryActions";
+import { useAppDispatch, useAppSelector } from "../../store/store";
 
 const CategoryLinks = () => {
-  const [categories, setCategories] = useState<
-    {
-      name: string;
-      image: string;
-      id: string;
-    }[]
-  >();
+  const dispatch = useAppDispatch();
+  const categories = useAppSelector((state) => state.categories.categoryList);
+
   useEffect(() => {
-    axios
-      .get("http://localhost:8080/category")
-      .then((res) => {
-        setCategories(res.data.categories);
-      })
-      .catch((err) => console.log(err));
+    dispatch(loadCategories());
   }, []);
+
   return (
     <Stack direction="row" sx={{ mb: 2 }}>
       {!!categories &&

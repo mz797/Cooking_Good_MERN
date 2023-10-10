@@ -68,12 +68,17 @@ const AddRecipeDescription = ({
     <>
       <Stack direction="row" justifyContent="end" spacing={2} sx={{ mb: 1 }}>
         {description.length > 1 && (
-          <Button variant="contained" onClick={handleRemoveStep}>
+          <Button
+            variant="contained"
+            sx={{ color: (theme) => theme.palette.text.light }}
+            onClick={handleRemoveStep}
+          >
             Usuń ostatni krok
           </Button>
         )}
         <Button
           variant="contained"
+          sx={{ color: (theme) => theme.palette.text.light }}
           onClick={recipeInSteps ? handleAddStep : handleTrigerRecipeType}
         >
           {recipeInSteps ? "Dodaj krok" : "Stwórz przepis w krokach"}

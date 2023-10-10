@@ -1,8 +1,15 @@
 import { Box, Button, Container, Stack, Typography } from "@mui/material";
-import React from "react";
+import React, { useState } from "react";
 import LotteryDialog from "./LotteryDialog";
 
 const LotterySection = () => {
+  const [open, setOpen] = useState(false);
+  const handleOpenLottery = () => {
+    setOpen(true);
+  };
+  const handleClose = () => {
+    setOpen(false);
+  };
   return (
     <Box
       sx={{
@@ -11,7 +18,7 @@ const LotterySection = () => {
         backgroundColor: "#30b470",
       }}
     >
-      <LotteryDialog />
+      <LotteryDialog open={open} onClose={handleClose} />
       <Container
         sx={{
           mb: 4,
@@ -34,6 +41,7 @@ const LotterySection = () => {
           </Typography>
           <Button
             variant="contained"
+            onClick={handleOpenLottery}
             sx={{
               background: (theme) => theme.palette.text.light,
               color: (theme) => theme.palette.primary.main,

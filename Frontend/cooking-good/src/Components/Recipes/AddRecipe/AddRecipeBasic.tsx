@@ -15,9 +15,10 @@ import {
 import styled from "styled-components";
 import { Controller } from "react-hook-form";
 import ImageUpload from "../../common/ImageUpload";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { ICategory } from "../../../types/category-types";
-import axios from "axios";
+import { useAppDispatch, useAppSelector } from "../../../store/store";
+import { loadCategories } from "../../../store/actions/CategoryActions";
 
 export const difficultyMarks = [
   {
@@ -80,22 +81,16 @@ const AddRecipeBasic = ({
   errors,
   setValue,
 }: any) => {
-  const [categories, setCategories] = useState<ICategory[] | []>([]);
+  const dispatch = useAppDispatch();
+  const categories = useAppSelector((state) =>
+    state.categories.categoryList.map((category: ICategory) => ({
+      id: category.id,
+      name: category.name,
+    }))
+  );
 
   useEffect(() => {
-    axios
-      .get(`http://localhost:8080/category`)
-      .then((res) => {
-        if (res.status === 200) {
-          setCategories(
-            res.data.categories.map((category: ICategory) => ({
-              id: category.id,
-              name: category.name,
-            }))
-          );
-        }
-      })
-      .catch((err) => console.log(err));
+    dispatch(loadCategories());
   }, []);
 
   const selectedImageHandler = (file: File | undefined) => {
