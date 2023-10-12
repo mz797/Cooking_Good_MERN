@@ -9,24 +9,22 @@ import {
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import React from "react";
-import { difficultyMarks } from "../AddRecipe/AddRecipeBasic";
 
-const DifficultySection = ({
-  handleDifficultySelect,
-  selectedDifficulty,
-  setStep,
-}: myProps) => {
-  console.log(selectedDifficulty);
+const popularityMarks = [
+  { value: 1, label: "Znane i popularne" },
+  { value: 2, label: "Ukryte perełki" },
+];
+const PopularitySection = ({ handleSelect, selected, setStep }: myProps) => {
   return (
     <>
       <Typography variant="h5" sx={{ mb: 2 }}>
-        Jakiego wyzwania szukasz?
+        Na co masz ochotę?
       </Typography>
-      {difficultyMarks.map((diff) => (
+      {popularityMarks.map((diff) => (
         <Box
           onClick={(e) => {
             e.preventDefault();
-            handleDifficultySelect(diff.value);
+            handleSelect(diff.value);
           }}
           sx={{
             cursor: "pointer",
@@ -52,9 +50,7 @@ const DifficultySection = ({
                   },
                 }}
                 checked={
-                  selectedDifficulty.filter(
-                    (selected) => selected === diff.value
-                  ).length === 1
+                  selected.filter((s: number) => s === diff.value).length === 1
                 }
               />
             }
@@ -65,15 +61,15 @@ const DifficultySection = ({
       <Stack direction="row" justifyContent={"center"} sx={{ width: "100%" }}>
         <IconButton
           onClick={() => {
-            setStep(0);
+            setStep(2);
           }}
         >
           <ArrowBackIcon />
         </IconButton>
         <IconButton
-          disabled={selectedDifficulty.length === 0}
+          disabled={selected.length === 0}
           onClick={() => {
-            setStep(2);
+            setStep(4);
           }}
         >
           <ArrowForwardIcon />
@@ -82,10 +78,10 @@ const DifficultySection = ({
     </>
   );
 };
-export default DifficultySection;
+export default PopularitySection;
 
 type myProps = {
-  handleDifficultySelect: (id: number) => void;
-  selectedDifficulty: number[];
+  handleSelect: (id: number) => void;
+  selected: number[];
   setStep: (val: number) => void;
 };

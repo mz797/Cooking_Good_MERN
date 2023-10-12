@@ -12,13 +12,15 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material";
-import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AddCategory from "../../../Components/Category/AddCategory";
 import { ICategory } from "../../../types/category-types";
 import { useAppDispatch, useAppSelector } from "../../../store/store";
-import { loadCategories } from "../../../store/actions/CategoryActions";
+import {
+  deleteCategoryAsync,
+  loadCategories,
+} from "../../../store/actions/CategoryActions";
 
 const CategoriesPage = () => {
   const dispatch = useAppDispatch();
@@ -34,24 +36,10 @@ const CategoriesPage = () => {
   }, [categoryList]);
 
   const handleCategoryAdded = () => {
-    axios
-      .get("http://localhost:8080/category")
-      .then((res) => {
-        setCategories(res.data.categories);
-      })
-      .catch((err) => console.log(err));
+    dispatch(loadCategories());
   };
   const handleCategoryDelete = (categoryId: string) => {
-    axios
-      .delete(`http://localhost:8080/category/${categoryId}`)
-      .then((res) => {
-        if (res.status === 200) {
-          setCategories((prev) => prev.filter((c) => c.id !== categoryId));
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    dispatch(deleteCategoryAsync(categoryId));
   };
 
   const handleOpenAddCategory = () => {
@@ -62,7 +50,7 @@ const CategoriesPage = () => {
   };
 
   return (
-    <Container sx={{ mt: 4 }}>
+    <Container sx={{ py: 4 }}>
       <Stack alignItems="end" sx={{ m: 1 }}>
         <Button
           sx={{ color: (theme) => theme.palette.text.light, alignSelf: "end" }}

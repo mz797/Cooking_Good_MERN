@@ -87,6 +87,7 @@ const recipesSlice = createSlice({
 
     loadRecipeDetails: (state) => ({
       ...state,
+      recipeDetail: null,
       isLoading: true,
     }),
     loadRecipeDetailsSuccess: (state, action: PayloadAction<RecipeType>) => ({

@@ -33,7 +33,13 @@ const ForbidenIngredients = ({
         <DialogActions>
           <Button onClick={onClose}>Anuluj</Button>
           <Button onClick={() => onSave("")}>Wyczyść</Button>
-          <Button onClick={() => onSave(value)}>Zapisz</Button>
+          <Button
+            onClick={() => onSave(value)}
+            variant={"contained"}
+            sx={{ color: (theme) => theme.palette.text.light }}
+          >
+            Zapisz
+          </Button>
         </DialogActions>
       </Dialog>
     </div>

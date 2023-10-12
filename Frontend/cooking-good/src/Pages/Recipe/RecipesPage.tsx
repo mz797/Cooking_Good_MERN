@@ -51,21 +51,19 @@ const RecipesPage = () => {
           <Container sx={{ mt: 4, p: 0, py: 1, pb: 5 }} maxWidth={"xl"}>
             <RecipeList
               title="Ostatnio dodane"
-              recipes={recipeList}
+              recipes={recipeList.slice(0, 6)}
               emptyStateMessage={`Brak przepisów`}
               titleStyles={{ my: 4 }}
             />
-            {recipeList.length > 0 && (
-              <Stack alignItems="end">
-                <Button
-                  endIcon={<EastIcon />}
-                  component={Link}
-                  to="/recipes-list"
-                >
-                  Zobacz wszystkie
-                </Button>
-              </Stack>
-            )}
+            <Stack alignItems="end" sx={{ mt: 1 }}>
+              <Button
+                endIcon={<EastIcon />}
+                component={Link}
+                to="/recipes-list"
+              >
+                Zobacz wszystkie
+              </Button>
+            </Stack>
           </Container>
         )}
       </Box>
@@ -75,8 +73,8 @@ const RecipesPage = () => {
           width: "100%",
         }}
       >
-        <Container sx={{ mb: 4, mt: 4, p: 0, py: 1, pb: 5 }} maxWidth={"xl"}>
-          {recipeList.length > 0 && (
+        {recipeList.length > 0 && (
+          <Container sx={{ mb: 4, mt: 4, p: 0, py: 1, pb: 5 }} maxWidth={"xl"}>
             <RecipeList
               title="Najczęściej odwiedzane"
               recipes={recipeList
@@ -87,8 +85,17 @@ const RecipesPage = () => {
               emptyStateMessage={`Brak przepisów`}
               titleStyles={{ my: 4 }}
             />
-          )}
-        </Container>
+            <Stack alignItems="end" sx={{ mt: 1 }}>
+              <Button
+                endIcon={<EastIcon />}
+                component={Link}
+                to="/recipes-list"
+              >
+                Zobacz wszystkie
+              </Button>
+            </Stack>
+          </Container>
+        )}
       </Box>
       <Box
         sx={{
@@ -96,8 +103,8 @@ const RecipesPage = () => {
           background: (theme) => theme.palette.background.darker,
         }}
       >
-        <Container sx={{ mt: 4, p: 0, py: 1, pb: 5 }} maxWidth={"xl"}>
-          {recipeList.length > 0 && (
+        {recipeList.length > 0 && (
+          <Container sx={{ mt: 4, p: 0, py: 1, pb: 5 }} maxWidth={"xl"}>
             <RecipeList
               title="Najbardziej lubiane"
               recipes={recipeList
@@ -109,8 +116,17 @@ const RecipesPage = () => {
               emptyStateMessage={`Brak przepisów`}
               titleStyles={{ my: 4 }}
             />
-          )}
-        </Container>
+            <Stack alignItems="end" sx={{ mt: 1 }}>
+              <Button
+                endIcon={<EastIcon />}
+                component={Link}
+                to="/recipes-list"
+              >
+                Zobacz wszystkie
+              </Button>
+            </Stack>
+          </Container>
+        )}
       </Box>
       <NewsletterForm email={!!user ? user.email : undefined} />
     </>

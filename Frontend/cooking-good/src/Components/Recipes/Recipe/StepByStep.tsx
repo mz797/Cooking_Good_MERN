@@ -31,8 +31,12 @@ const StepByStep = ({ recipe, open, onClose }: myProps) => {
   const handleClose = () => {
     setAnchorEl(null);
   };
+  const handleDialogClose = () => {
+    setStep(0);
+    onClose();
+  };
   return (
-    <Dialog open={open} maxWidth="md" onClose={onClose}>
+    <Dialog open={open} maxWidth="md" onClose={handleDialogClose}>
       <Stack
         direction="row"
         justifyContent="space-between"
@@ -121,7 +125,7 @@ const StepByStep = ({ recipe, open, onClose }: myProps) => {
         </Popover>
       </Stack>
       <DialogContent>
-        <Grid container>
+        <Grid container spacing={2}>
           <Grid item xs={7}>
             <div
               dangerouslySetInnerHTML={{
@@ -133,7 +137,7 @@ const StepByStep = ({ recipe, open, onClose }: myProps) => {
             <RecipeImage
               recipe={recipe}
               showName={false}
-              imageStyle={{ height: "auto" }}
+              imageStyle={{ height: 300 }}
               infoStyle={{ display: "none" }}
               showLikes={false}
             />

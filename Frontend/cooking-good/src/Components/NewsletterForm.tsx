@@ -67,7 +67,7 @@ const NewsletterForm = ({ email }: myProps) => {
         backgroundColor: "#30b470",
       }}
     >
-      <Container sx={{ mb: 4, p: 0, py: 8 }} maxWidth={"xl"}>
+      <Container sx={{ p: 0, py: 10 }} maxWidth={"xl"}>
         <Typography
           variant="h4"
           sx={{

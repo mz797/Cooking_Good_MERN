@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 import CookieIcon from "@mui/icons-material/Cookie";
 import React from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store/store";
 import { logout } from "../store/authSlice";
@@ -38,6 +38,7 @@ const Navigation = () => {
   console.log(user);
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const [adminAnchorEl, setAdminAnchorEl] = React.useState<null | HTMLElement>(
     null
@@ -60,6 +61,7 @@ const Navigation = () => {
     setUserAnchorEl(null);
   };
   const handleLogout = () => {
+    navigate("/");
     dispatch(logout());
   };
   return (

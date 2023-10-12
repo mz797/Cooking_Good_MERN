@@ -28,28 +28,33 @@ const TimeSection = ({ handleTimeSelect, selectedTime, setStep }: myProps) => {
               cursor: "pointer",
               borderRadius: 4,
               overflow: "hidden",
+              backgroundColor: (theme) => theme.palette.primary.main,
+              p: 1.5,
+              m: 1,
             }}
           >
-            <Box
+            <FormControlLabel
               sx={{
-                width: "100%",
-                height: "100%",
-                p: 1.5,
+                color: (theme) => theme.palette.text.light,
+                textShadow: (theme) => `0 0 10px ${theme.palette.text.dark}`,
               }}
-            >
-              <FormControlLabel
-                componentsProps={{ typography: { variant: "h6" } }}
-                control={
-                  <Checkbox
-                    checked={
-                      selectedTime.filter((selected) => selected === diff.value)
-                        .length == 1
-                    }
-                  />
-                }
-                label={diff.label}
-              />
-            </Box>
+              componentsProps={{ typography: { variant: "h6" } }}
+              control={
+                <Checkbox
+                  checked={
+                    selectedTime.filter((selected) => selected === diff.value)
+                      .length === 1
+                  }
+                  sx={{
+                    color: (theme) => theme.palette.text.light,
+                    "&.Mui-checked": {
+                      color: (theme) => theme.palette.text.light,
+                    },
+                  }}
+                />
+              }
+              label={diff.label}
+            />
           </Box>
         ) : null
       )}

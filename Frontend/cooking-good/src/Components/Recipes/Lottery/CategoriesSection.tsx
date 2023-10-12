@@ -33,40 +33,31 @@ const CategoriesSection = ({
             }}
             sx={{
               cursor: "pointer",
-              backgroundSize: "cover",
-              backgroundImage: `url('http://localhost:8080/${c.image.replace(
-                "\\",
-                "/"
-              )}')`,
-              backgroundPosition: "center",
               borderRadius: 4,
               overflow: "hidden",
+              backgroundColor: (theme) => theme.palette.primary.main,
+              p: 1,
             }}
           >
-            <Box
+            <FormControlLabel
+              componentsProps={{ typography: { variant: "h6" } }}
               sx={{
-                width: "100%",
-                height: "100%",
-                backgroundColor: "rgba(0, 0, 0, 0.5)",
-                backdropFilter: "blur(1px)",
-                p: 1.5,
+                color: (theme) => theme.palette.text.light,
+                textShadow: (theme) => `0 0 10px ${theme.palette.text.dark}`,
               }}
-            >
-              <FormControlLabel
-                componentsProps={{ typography: { variant: "h6" } }}
-                sx={{
-                  color: (theme) => theme.palette.text.light,
-                  textShadow: (theme) => `0 0 10px ${theme.palette.text.dark}`,
-                }}
-                control={
-                  <Checkbox
-                    sx={{ color: (theme) => theme.palette.text.light }}
-                    checked={!!selectedCategories.find((cId) => cId === c.id)}
-                  />
-                }
-                label={c.name}
-              />
-            </Box>
+              control={
+                <Checkbox
+                  sx={{
+                    color: (theme) => theme.palette.text.light,
+                    "&.Mui-checked": {
+                      color: (theme) => theme.palette.text.light,
+                    },
+                  }}
+                  checked={!!selectedCategories.find((cId) => cId === c.id)}
+                />
+              }
+              label={c.name}
+            />
           </Box>
         ))}
       </Masonry>

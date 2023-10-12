@@ -241,8 +241,8 @@ const AddRecipe = ({ recipe }: myProps) => {
                 <Button
                   variant="contained"
                   color="success"
-                  sx={{ mt: 2 }}
                   type="submit"
+                  sx={{ color: (theme) => theme.palette.text.light, mt: 2 }}
                   endIcon={<SaveIcon />}
                 >
                   Zapisz

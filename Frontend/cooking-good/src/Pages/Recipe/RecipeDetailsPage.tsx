@@ -22,7 +22,7 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { RecipeType } from "../../types/recipe-types";
-import { RootState, useAppDispatch } from "../../store/store";
+import { RootState, useAppDispatch, useAppSelector } from "../../store/store";
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import RateDialog from "../../Components/Recipes/Recipe/Details/RateDialog";
 import DescriptionIcon from "@mui/icons-material/Description";
@@ -53,6 +53,7 @@ import {
   deleteRecipeFromFavorites,
   loadSingleRecipe,
 } from "../../store/actions/RecipesActions";
+import LoadingProgress from "../../Components/common/LoadingProgress";
 
 type CommentType = {
   content: string;
@@ -73,6 +74,8 @@ const RecipeDetailsPage = () => {
   const recipeDetails = useSelector(
     (state: RootState) => state.recipes.recipeDetail
   );
+  const recipeIsLoading = useAppSelector((state) => state.recipes.isLoading);
+
   const navigate = useNavigate();
   const [recipe, setRecipe] = useState<RecipeType | null>(recipeDetails);
   const [openRateDialog, setOpenRateDialog] = useState<boolean>(false);
@@ -248,6 +251,18 @@ const RecipeDetailsPage = () => {
       setSelectedIngredients((prev) => [...prev, ingredient]);
     }
   };
+
+  if (recipeIsLoading) {
+    return (
+      <Stack
+        sx={{ height: "50vh" }}
+        justifyContent="center"
+        alignItems="center"
+      >
+        <LoadingProgress />
+      </Stack>
+    );
+  }
   return (
     <>
       <Container sx={{ my: 4 }}>
