@@ -150,7 +150,7 @@ const UsersPage = () => {
                   <TableCell>
                     <Stack direction="row" justifyContent="space-between">
                       <Button onClick={() => handleChangeRole(user)}>
-                        Zmień role na:{" "}
+                        Zmień rolę na:{" "}
                         {user.role === "admin" ? "Użytkownik" : "Admin"}
                       </Button>
                       <Button onClick={() => handleChangeStatus(user)}>

@@ -10,6 +10,8 @@ import Recipe from "../models/recipe";
 import { JWT_KEY } from "../config/configConsts";
 import puppeteer, { Browser, Page } from "puppeteer";
 
+// const FacebookStrategy = require("passport-facebook").Strategy;
+
 interface IUser extends Document {
   name: string;
   email: string;
@@ -17,6 +19,8 @@ interface IUser extends Document {
   role: string;
   status: string;
   description: string;
+  serviceId: string;
+
   image: string;
   recipes: mongoose.Types.ObjectId[];
   favorites: mongoose.Types.ObjectId[];
@@ -67,6 +71,72 @@ export const getUsers = async (
     message: "Pobrano listę użytkowników.",
     users: users.map((user) => user.toObject({ getters: true })),
   });
+};
+
+export const loginWithFacebook = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { id, name } = req.body;
+  try {
+    const user = await User.findOne({ serviceId: id });
+    if (user) {
+      const token = jwt.sign({ userId: user._id }, JWT_KEY, {
+        expiresIn: "1h",
+      });
+      res.status(201).json({
+        user: {
+          userId: user.id,
+          email: "",
+          name: user.name,
+          role: user.role,
+          image: user.image,
+          status: user.status,
+          description: user.description,
+          recipes: user.recipes,
+          favorites: user.favorites,
+          shoppingList: user.shoppingList,
+        },
+        token: token,
+        message: "Użytkownik został zalogowany",
+      });
+    } else {
+      const newUser = new User({
+        serviceId: id,
+        status: "active",
+        name: name,
+        email: "",
+        password: "",
+        role: "user",
+        image: "",
+        description: "",
+        recipes: [],
+        favorites: [],
+        shoppingList: [],
+      });
+      const result = await newUser.save();
+      const token = jwt.sign({ userId: result._id }, JWT_KEY, {
+        expiresIn: "1h",
+      });
+      res.status(201).json({
+        user: {
+          userId: result.id,
+          email: "",
+          name: result.name,
+          role: result.role,
+          image: result.image,
+          status: result.status,
+          description: result.description,
+          recipes: result.recipes,
+          favorites: result.favorites,
+          shoppingList: result.shoppingList,
+        },
+        token: token,
+        message: "Użytkownik został zarejestrowany.",
+      });
+    }
+  } catch (err) {}
 };
 
 export const getSingleUser = async (
@@ -274,7 +344,8 @@ export const login = async (
   let isValidPassword: boolean = false;
 
   try {
-    isValidPassword = await bcrypt.compare(password, existingUser.password);
+    if (!!existingUser.password)
+      isValidPassword = await bcrypt.compare(password, existingUser.password);
   } catch (err) {
     const error: HttpError = new HttpError(
       "Nie udało się zalogować. Proszę sprawdz poprawność danych.",

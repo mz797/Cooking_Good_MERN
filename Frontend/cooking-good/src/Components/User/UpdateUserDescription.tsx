@@ -30,7 +30,9 @@ const UpdateUserDescription = ({
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth>
-      <DialogTitle>Edytuj opis użytkownika</DialogTitle>
+      <DialogTitle sx={{ fontWeight: "bold" }}>
+        Edytuj opis użytkownika
+      </DialogTitle>
       <form onSubmit={handleSubmit(onSubmit)}>
         <DialogContent sx={{ display: "flex", justifyContent: "center" }}>
           <TextField

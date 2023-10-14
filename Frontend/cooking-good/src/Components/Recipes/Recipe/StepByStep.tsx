@@ -44,7 +44,11 @@ const StepByStep = ({ recipe, open, onClose }: myProps) => {
         sx={{ px: 2, borderBottom: "1px solid #999" }}
       >
         <DialogTitle
-          sx={{ width: 800, color: (theme) => theme.palette.primary.main }}
+          sx={{
+            width: 800,
+            color: (theme) => theme.palette.primary.main,
+            fontWeight: "bold",
+          }}
         >
           {recipe.name}
         </DialogTitle>

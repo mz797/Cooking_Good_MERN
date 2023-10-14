@@ -3,6 +3,7 @@ import authSlice from "./authSlice";
 import notificationReducer from "./reducers/notificationReducer";
 import recipesReducer from "./reducers/recipesReducer";
 import categoryReducer from "./reducers/CategoryReducer";
+import themeReducer from "./reducers/themeReducer";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 
 const store = configureStore({
@@ -11,6 +12,7 @@ const store = configureStore({
     notification: notificationReducer,
     recipes: recipesReducer,
     categories: categoryReducer,
+    theme: themeReducer,
   },
 });
 

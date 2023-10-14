@@ -11,6 +11,7 @@ import {
   getSingleUser,
   getUsers,
   login,
+  loginWithFacebook,
   signup,
   updateUserDescription,
   updateUserImage,
@@ -47,5 +48,6 @@ router.post(
 );
 
 router.post("/login", [check("email").normalizeEmail().isEmail()], login);
+router.post("/facebook/login", loginWithFacebook);
 
 export default router;

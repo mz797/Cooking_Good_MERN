@@ -18,6 +18,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store/store";
 import { logout } from "../store/authSlice";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import ModeSwitch from "./ModeSwitch";
 
 export const RouterLink = styled(NavLink)(({ theme }) => ({
   color: theme.palette.text.light,
@@ -35,7 +36,6 @@ const MenuLink = styled(NavLink)(({ theme }) => ({
 const Navigation = () => {
   const token = useSelector((state: RootState) => state.auth.token);
   const user = useSelector((state: RootState) => state.auth.user);
-  console.log(user);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -190,6 +190,7 @@ const Navigation = () => {
                 </Menu>
               </>
             )}
+            <ModeSwitch />
           </Stack>
         </Toolbar>
       </Container>

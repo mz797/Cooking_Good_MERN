@@ -67,7 +67,7 @@ const Comment = ({ comment, recipe }: myProps) => {
               sx={{
                 fontWeight: 600,
                 mr: 1,
-                color: (theme) => theme.palette.text.dark,
+                // color: (theme) => theme.palette.text.dark,
               }}
             >
               {comment.creator.name}

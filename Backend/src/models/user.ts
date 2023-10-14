@@ -9,11 +9,9 @@ const userSchema = new Schema({
   },
   email: {
     type: String,
-    required: true,
   },
   password: {
     type: String,
-    required: true,
   },
   role: {
     type: String,
@@ -35,6 +33,7 @@ const userSchema = new Schema({
       amount: { type: String, required: true },
     },
   ],
+  serviceId: { type: String },
   recipes: [{ type: mongoose.Types.ObjectId, required: true, ref: "Recipe" }],
   favorites: [{ type: mongoose.Types.ObjectId, required: true, ref: "Recipe" }],
 });

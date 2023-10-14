@@ -26,3 +26,18 @@ code {
     height: 120px;
     border-radius: 16px;
 }
+
+.facebook-button {
+    background-color: #1877f2; /* Facebook blue color */
+    color: #fff; /* Text color */
+    padding: 10px 20px; /* Adjust padding as needed */
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease; /* Add a hover effect */
+}
+
+.facebook-button:hover {
+    background-color: #135592; /* Darker blue on hover */
+}

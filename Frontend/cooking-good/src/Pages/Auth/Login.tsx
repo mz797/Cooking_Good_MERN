@@ -8,6 +8,7 @@ import { useDispatch } from "react-redux";
 import { login } from "../../store/authSlice";
 import { useNotification } from "../../hooks/notification-hook";
 import PasswordInput from "../../Components/Auth/PasswordInput";
+import FacebookAuth from "./FacebookAuth";
 
 const StyledTextField = styled(TextField)`
   width: 100%;
@@ -136,6 +137,7 @@ const Login = () => {
               Zaloguj się
             </Button>
           </form>
+          <FacebookAuth />
         </Grid>
       </Grid>
     </Box>

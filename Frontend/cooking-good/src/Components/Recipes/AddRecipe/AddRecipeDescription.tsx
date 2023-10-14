@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Controller } from "react-hook-form";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
+import QuillEditor from "quill";
 
 export const modules = {
   toolbar: [
@@ -40,6 +41,12 @@ const AddRecipeDescription = ({
   const [recipeInSteps, setRecipeInSteps] = useState<boolean>(
     description.length !== 1
   );
+
+  const ref = React.useRef<ReactQuill & { editor: QuillEditor }>(null);
+
+  React.useEffect(() => {
+    ref.current?.editor.root.setAttribute("lang", "pl");
+  }, []);
 
   const handleAddStep = () => {
     handleAddDescription();
@@ -98,6 +105,7 @@ const AddRecipeDescription = ({
               render={({ field, fieldState }) => (
                 <div>
                   <ReactQuill
+                    ref={ref}
                     className={recipeInSteps ? "super-small-quill" : "quill"}
                     theme="snow"
                     value={field.value}
