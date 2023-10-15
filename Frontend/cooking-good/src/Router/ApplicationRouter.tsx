@@ -1,7 +1,7 @@
 import { createBrowserRouter } from "react-router-dom";
 import RecipesPage from "../Pages/Recipe/RecipesPage";
 import RootPage from "../Pages/Root";
-import Planner from "../Pages/Planner";
+import Planner from "../Pages/Planner/Planner";
 import RecipeDetailsPage from "../Pages/Recipe/RecipeDetailsPage";
 import AddRecipePage from "../Pages/Recipe/AddRecipePage";
 import Login from "../Pages/Auth/Login";
@@ -16,6 +16,7 @@ import UserProfilePage from "../Pages/User/UserProfilePage";
 import ActivateAccount from "../Pages/Auth/ActivateAccount";
 import PostListPage from "../Pages/Admin/Posts/PostListPage";
 import RecipesListPage from "../Pages/Recipe/RecipesListPage";
+import PlannerDetails from "../Pages/Planner/PlannerDetails";
 
 export const router = createBrowserRouter([
   {
@@ -51,6 +52,7 @@ export const router = createBrowserRouter([
       { path: "add-recipe", element: <AddRecipePage /> },
       { path: "edit-recipe/:id", element: <AddRecipePage /> },
       { path: "planner", element: <Planner /> },
+      { path: "planner/:date", element: <PlannerDetails /> },
       { path: "categories", element: <CategoriesPage /> },
       { path: "", element: <RecipesPage /> },
     ],

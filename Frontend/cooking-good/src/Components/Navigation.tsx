@@ -179,7 +179,7 @@ const Navigation = () => {
                       sx={{
                         p: 0,
                         m: 0,
-                        color: (theme) => theme.palette.text.dark,
+                        // color: (theme) => theme.palette.text.dark,
                         fontSize: 16,
                         textTransform: "capitalize",
                       }}

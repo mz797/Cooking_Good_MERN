@@ -240,7 +240,6 @@ const AddRecipe = ({ recipe }: myProps) => {
               {step === 3 && (
                 <Button
                   variant="contained"
-                  color="success"
                   type="submit"
                   sx={{ color: (theme) => theme.palette.text.light, mt: 2 }}
                   endIcon={<SaveIcon />}

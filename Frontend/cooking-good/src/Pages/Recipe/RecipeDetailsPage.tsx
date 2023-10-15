@@ -17,6 +17,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
@@ -54,6 +55,7 @@ import {
   loadSingleRecipe,
 } from "../../store/actions/RecipesActions";
 import LoadingProgress from "../../Components/common/LoadingProgress";
+import AddToPlan from "../../Components/Recipes/Recipe/Details/AddToPlan";
 
 type CommentType = {
   content: string;
@@ -84,7 +86,7 @@ const RecipeDetailsPage = () => {
   const [likeIsLoading, setLikeIsLoading] = useState<boolean>(false);
   const [pdfIsLoading, setPdfIsLoading] = useState<boolean>(false);
   const [openStepByStep, setOpenStepByStep] = useState<boolean>(false);
-
+  const [addToPlanOpen, setAddToPlanOpen] = useState<boolean>(false);
   const [selectedIngredients, setSelectedIngredients] = useState<
     { name: string; amount: string }[] | []
   >([]);
@@ -266,6 +268,12 @@ const RecipeDetailsPage = () => {
   return (
     <>
       <Container sx={{ my: 4 }}>
+        <AddToPlan
+          open={addToPlanOpen}
+          onClose={() => {
+            setAddToPlanOpen(false);
+          }}
+        />
         {!!recipe && openRateDialog && (
           <RateDialog
             open={openRateDialog}
@@ -350,6 +358,13 @@ const RecipeDetailsPage = () => {
                   ) : (
                     <PictureAsPdfIcon />
                   )}
+                </IconButton>
+                <IconButton
+                  onClick={() => {
+                    setAddToPlanOpen(true);
+                  }}
+                >
+                  <CalendarMonthIcon />
                 </IconButton>
                 <IconButton onClick={handleOpenRate}>
                   <StarIcon />

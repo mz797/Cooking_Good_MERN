@@ -45,7 +45,7 @@ const AddRecipeDescription = ({
   const ref = React.useRef<ReactQuill & { editor: QuillEditor }>(null);
 
   React.useEffect(() => {
-    ref.current?.editor.root.setAttribute("lang", "pl");
+    ref.current?.editor.root.setAttribute("locale", "pl");
   }, []);
 
   const handleAddStep = () => {
