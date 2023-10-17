@@ -4,11 +4,13 @@ import { check } from "express-validator";
 import {
   activateUser,
   addToFavorites,
+  addToPlanner,
   addToShoppingList,
   deleteFromFavorites,
   deleteFromShoppingList,
   downloadShoppingList,
   getSingleUser,
+  getUserPlanner,
   getUsers,
   login,
   loginWithFacebook,
@@ -32,6 +34,9 @@ router.put("/status/:userId", updateUserStatus);
 router.put("/role/:userId", updateUserRole);
 router.put("/image/:userId", fileUpload.single("image"), updateUserImage);
 router.put("/description/:userId", updateUserDescription);
+
+router.post("/planner/:userId/:recipeId", addToPlanner);
+router.get("/planner/:userId", getUserPlanner);
 
 router.put("/shopping-list/:userId", addToShoppingList);
 router.delete("/shopping-list/:userId", deleteFromShoppingList);

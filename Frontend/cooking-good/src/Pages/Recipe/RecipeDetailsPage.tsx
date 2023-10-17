@@ -254,6 +254,18 @@ const RecipeDetailsPage = () => {
     }
   };
 
+  const handleOpenAddToPlanner = () => {
+    if (!token) {
+      setLoginDialogContent(
+        "Jedynie zalogowani użytkownicy mogą tworzyć plan."
+      );
+      setLoginDialogOpen(true);
+      return;
+    } else {
+      setAddToPlanOpen(true);
+    }
+  };
+
   if (recipeIsLoading) {
     return (
       <Stack
@@ -359,11 +371,7 @@ const RecipeDetailsPage = () => {
                     <PictureAsPdfIcon />
                   )}
                 </IconButton>
-                <IconButton
-                  onClick={() => {
-                    setAddToPlanOpen(true);
-                  }}
-                >
+                <IconButton onClick={handleOpenAddToPlanner}>
                   <CalendarMonthIcon />
                 </IconButton>
                 <IconButton onClick={handleOpenRate}>

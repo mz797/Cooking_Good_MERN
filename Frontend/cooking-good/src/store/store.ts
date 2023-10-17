@@ -5,6 +5,7 @@ import recipesReducer from "./reducers/recipesReducer";
 import categoryReducer from "./reducers/CategoryReducer";
 import themeReducer from "./reducers/themeReducer";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
+import plannerReducer from "./reducers/PlannerReducer";
 
 const store = configureStore({
   reducer: {
@@ -13,6 +14,7 @@ const store = configureStore({
     recipes: recipesReducer,
     categories: categoryReducer,
     theme: themeReducer,
+    planner: plannerReducer,
   },
 });
 

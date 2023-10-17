@@ -7,21 +7,28 @@ import {
   Typography,
 } from "@mui/material";
 import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
-import { useAppSelector } from "../../../../store/store";
+import { useAppDispatch, useAppSelector } from "../../../../store/store";
 import { useForm } from "react-hook-form";
 import React from "react";
 import dayjs, { Dayjs } from "dayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import axios from "axios";
+import {
+  addErrorNotification,
+  addSuccessNotification,
+} from "../../../../store/reducers/notificationReducer";
 
 const AddToPlan = ({ open, onClose }: myProps) => {
   const recipe = useAppSelector((state) => state.recipes.recipeDetail);
-  const user = useAppSelector((state) => state.auth.user);
+  const auth = useAppSelector((state) => state.auth);
+  const dispatch = useAppDispatch();
 
   const {
     register,
     setValue,
+    reset,
     handleSubmit,
     formState: { errors },
   } = useForm<Inputs>({
@@ -31,8 +38,29 @@ const AddToPlan = ({ open, onClose }: myProps) => {
   const { onChange, ...datePickerRegisterProps } = register("date", {
     required: { value: true, message: "Pole jest wymagane." },
   });
-  const handleFormSubmit = (data: Inputs) => {
-    console.log(dayjs(data.date).format("DD-MM-YYYY"));
+  const handleFormSubmit = async (data: Inputs) => {
+    if (!auth || !auth.token || !auth.user || !recipe) return;
+    try {
+      const res = await axios.post(
+        `http://localhost:8080/users/planner/${auth?.user.userId}/${recipe.id}`,
+        { date: dayjs(data.date).format("DD-MM-YYYY") },
+        { headers: { Authorization: "Bearer " + auth.token } }
+      );
+      console.log(res);
+      if (res.status === 200) {
+        dispatch(
+          addSuccessNotification({ message: "Dodano nową pozycję do planera." })
+        );
+        reset();
+        onClose();
+      }
+    } catch (err) {
+      dispatch(
+        addErrorNotification({
+          message: "Nie udało się dodać przepisu do planera.",
+        })
+      );
+    }
   };
 
   return (
@@ -57,8 +85,14 @@ const AddToPlan = ({ open, onClose }: myProps) => {
           </LocalizationProvider>
         </DialogContent>
         <DialogActions>
-          <Button type="button">Zamknij</Button>
-          <Button variant="contained" type={"submit"}>
+          <Button type="button" onClick={onClose}>
+            Zamknij
+          </Button>
+          <Button
+            variant="contained"
+            type={"submit"}
+            sx={{ color: (theme) => theme.palette.text.light }}
+          >
             Zapisz
           </Button>
         </DialogActions>

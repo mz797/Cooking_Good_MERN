@@ -25,6 +25,7 @@ interface IUser extends Document {
   recipes: mongoose.Types.ObjectId[];
   favorites: mongoose.Types.ObjectId[];
   shoppingList: { name: string; amount: string; id: string }[];
+  planner: { date: string; recipes: mongoose.Types.ObjectId[] }[];
 }
 
 interface IRecipe extends Document {
@@ -1030,4 +1031,111 @@ export const downloadShoppingList = async (
     const error = new HttpError("Wystąpił błąd podczas generowania PDF.", 500);
     return next(error);
   }
+};
+
+export const getUserPlanner = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const userId: string = req.params.userId;
+
+  let user: IUser | null;
+  try {
+    user = await User.findById(userId).populate("planner.recipes");
+    console.log(user);
+  } catch (err) {
+    console.log("addToPlanner", err);
+    const error: HttpError = new HttpError(
+      "Nie udało się znależć użytkownika!",
+      500
+    );
+    return next(error);
+  }
+
+  if (!user) {
+    console.log("nie ma usera");
+    const error: HttpError = new HttpError(
+      "Nie udało się znależć użytkownika!",
+      404
+    );
+    return next(error);
+  }
+
+  res.status(200).json({
+    message: "Pomyślnie pobrano planer.",
+    planner: user.planner,
+  });
+};
+export const addToPlanner = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const userId: string = req.params.userId;
+  const recipeId: mongoose.Types.ObjectId = new mongoose.Types.ObjectId(
+    req.params.recipeId
+  );
+  const { date } = req.body;
+
+  let user: IUser | null;
+  try {
+    user = await User.findById(userId);
+    console.log(user);
+  } catch (err) {
+    console.log("addToPlanner", err);
+    const error: HttpError = new HttpError(
+      "Nie udało się znależć użytkownika!",
+      500
+    );
+    return next(error);
+  }
+
+  if (!user) {
+    console.log("nie ma usera");
+    const error: HttpError = new HttpError(
+      "Nie udało się znależć użytkownika!",
+      404
+    );
+    return next(error);
+  }
+
+  const planIndex = user.planner.findIndex((plan) => plan.date === date);
+  if (planIndex !== -1) {
+    user.planner[planIndex].recipes.push(recipeId);
+  } else {
+    user.planner.push({
+      date: date,
+      recipes: [recipeId],
+    });
+  }
+  console.log("planner", user.planner);
+
+  try {
+    await user.save();
+  } catch (err) {
+    console.log(err);
+    const error: HttpError = new HttpError(
+      "Nie udało się dodać przepisu do planera!",
+      500
+    );
+    return next(error);
+  }
+
+  res.status(200).json({
+    message: "Dodano nową pozycję w kalendarzu.",
+    user: {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      role: user.role,
+      image: user.image,
+      status: user.status,
+      description: user.description,
+      recipes: user.recipes,
+      favorites: user.favorites,
+      shoppingList: user.shoppingList,
+    },
+    planner: user.planner,
+  });
 };
