@@ -7,7 +7,9 @@ import {
   addToPlanner,
   addToShoppingList,
   deleteFromFavorites,
+  deleteFromPlanner,
   deleteFromShoppingList,
+  downloadPlannerShoppingList,
   downloadShoppingList,
   getSingleUser,
   getUserPlanner,
@@ -36,7 +38,9 @@ router.put("/image/:userId", fileUpload.single("image"), updateUserImage);
 router.put("/description/:userId", updateUserDescription);
 
 router.post("/planner/:userId/:recipeId", addToPlanner);
+router.delete("/planner/:userId/:recipeId/:date", deleteFromPlanner);
 router.get("/planner/:userId", getUserPlanner);
+router.get("/planner/download/:userId/:date", downloadPlannerShoppingList);
 
 router.put("/shopping-list/:userId", addToShoppingList);
 router.delete("/shopping-list/:userId", deleteFromShoppingList);

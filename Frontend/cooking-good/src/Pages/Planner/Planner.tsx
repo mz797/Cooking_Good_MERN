@@ -53,7 +53,6 @@ const Planner = () => {
     const plan = planner.find(
       (plan) => plan.date === dayjs(date).format("DD-MM-YYYY")
     );
-    console.log(plan?.recipes);
     if (!!plan && plan.recipes.length > 0)
       return (
         <Stack

@@ -25,7 +25,7 @@ interface IUser extends Document {
   recipes: mongoose.Types.ObjectId[];
   favorites: mongoose.Types.ObjectId[];
   shoppingList: { name: string; amount: string; id: string }[];
-  planner: { date: string; recipes: mongoose.Types.ObjectId[] }[];
+  planner: { date: string; recipes: mongoose.Types.ObjectId[] | any[] }[];
 }
 
 interface IRecipe extends Document {
@@ -1138,4 +1138,144 @@ export const addToPlanner = async (
     },
     planner: user.planner,
   });
+};
+
+export const deleteFromPlanner = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const userId: string = req.params.userId;
+  const recipeId: mongoose.Types.ObjectId = new mongoose.Types.ObjectId(
+    req.params.recipeId
+  );
+  const date = req.params.date;
+  console.log("date", date);
+
+  let user: IUser | null;
+  try {
+    user = await User.findById(userId).populate("planner.recipes");
+    console.log(user);
+  } catch (err) {
+    console.log("addToPlanner", err);
+    const error: HttpError = new HttpError(
+      "Nie udało się znależć użytkownika!",
+      500
+    );
+    return next(error);
+  }
+
+  if (!user) {
+    console.log("nie ma usera");
+    const error: HttpError = new HttpError(
+      "Nie udało się znależć użytkownika!",
+      404
+    );
+    return next(error);
+  }
+
+  const planIndex = user.planner.findIndex((plan) => plan.date === date);
+  user.planner[planIndex].recipes = user.planner[planIndex].recipes.filter(
+    (recipe) => recipe._id.toString() !== recipeId.toString()
+  );
+
+  try {
+    await user.save();
+  } catch (err) {
+    console.log(err);
+    const error: HttpError = new HttpError(
+      "Nie udało się usunąć przepisu z planera!",
+      500
+    );
+    return next(error);
+  }
+
+  res.status(200).json({
+    message: "Usunięto przepis z planera.",
+    user: {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      role: user.role,
+      image: user.image,
+      status: user.status,
+      description: user.description,
+      recipes: user.recipes,
+      favorites: user.favorites,
+      shoppingList: user.shoppingList,
+    },
+    planner: user.planner,
+  });
+};
+
+export const downloadPlannerShoppingList = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const userId: string = req.params.userId;
+  const date = req.params.date;
+
+  let user: IUser | null;
+
+  try {
+    user = await User.findById(userId).populate("planner.recipes");
+
+    if (!user) {
+      const error: HttpError = new HttpError(
+        "Nie udało się znależć użytkownika!",
+        404
+      );
+      return next(error);
+    }
+
+    const planIndex = user.planner.findIndex((plan) => plan.date === date);
+
+    const browser: Browser = await puppeteer.launch();
+    const page: Page = await browser.newPage();
+
+    const html = `
+  <div>
+  <h1 style="margin-bottom: 12px;
+		text-align:center;
+		word-break: break-word;
+		font-weight: 500;
+		letter-spacing: 0.7">Jadłospis z dnia: ${date}</h1>
+		${user.planner[planIndex].recipes
+      .map(
+        (recipe) => `<div>
+<h4 style="text-align: center">${recipe.name}</h4>
+
+${recipe.ingredients
+  .map(
+    (ingredient: { name: string; amount: string }) =>
+      `<div style="width:100%; display:flex; justify-content:space-between; border-bottom:1px solid #999;letter-spacing: '1px'; padding:8px:text-transform:uppercase;font-size:20px">
+    <span>
+      <input type="checkbox" />${ingredient.name}
+    </span>
+    <span>${ingredient.amount}</span>
+  </div>`
+  )
+  .join("")}
+      </div>`
+      )
+      .join("")}
+</div>
+  `;
+
+    await page.setContent(html);
+    const pdfBuffer = await page.pdf({
+      format: "A4",
+      margin: { left: "1cm", top: "1cm", right: "1cm", bottom: "2cm" },
+    });
+
+    await browser.close();
+
+    res.contentType("application/pdf");
+    res.send(pdfBuffer);
+  } catch (err) {
+    console.log("PDF", err);
+    const error = new HttpError("Wystąpił błąd podczas generowania PDF.", 500);
+    return next(error);
+  }
 };

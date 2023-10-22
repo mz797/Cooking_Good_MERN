@@ -10,6 +10,7 @@ const RecipeList = ({
   emptyStateMessage,
   divider,
   titleStyles,
+  onDelete,
   sx,
 }: myProps) => {
   return (
@@ -34,7 +35,7 @@ const RecipeList = ({
         flexWrap="wrap"
       >
         {recipes.map((item: RecipeType, index: number) => (
-          <Recipe key={item._id + index} recipe={item} />
+          <Recipe key={item._id + index} recipe={item} onDelete={onDelete} />
         ))}
         {recipes.length === 0 && <EmptyState message={emptyStateMessage} />}
       </Stack>
@@ -50,4 +51,5 @@ type myProps = {
   divider?: boolean;
   titleStyles?: object;
   sx?: object;
+  onDelete?: (id: string) => void;
 };
