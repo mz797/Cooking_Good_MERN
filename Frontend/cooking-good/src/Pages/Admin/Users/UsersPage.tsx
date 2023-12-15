@@ -125,8 +125,8 @@ const UsersPage = () => {
   };
 
   return (
-    <Container sx={{ mt: 4 }}>
-      <TableContainer component={Paper}>
+    <Container sx={{ my: 4 }}>
+      <TableContainer component={Paper} elevation={8}>
         <Table>
           <TableHead>
             <TableRow>

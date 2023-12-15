@@ -10,6 +10,7 @@ import { Link } from "react-router-dom";
 import LotterySection from "../../Components/Recipes/Lottery/LotterySection";
 import { loadRecipes } from "../../store/actions/RecipesActions";
 import { RecipeType } from "../../types/recipe-types";
+import dayjs from "dayjs";
 
 const RecipesPage = () => {
   const dispatch = useAppDispatch();
@@ -51,7 +52,9 @@ const RecipesPage = () => {
           <Container sx={{ mt: 4, p: 0, py: 1, pb: 5 }} maxWidth={"xl"}>
             <RecipeList
               title="Ostatnio dodane"
-              recipes={recipeList.slice(0, 6)}
+              recipes={recipeList
+                .sort((a, b) => (dayjs(a.addedAt).isBefore(b.addedAt) ? 1 : -1))
+                .slice(0, 6)}
               emptyStateMessage={`Brak przepisów`}
               titleStyles={{ my: 4 }}
             />

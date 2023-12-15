@@ -172,7 +172,7 @@ const AddRecipe = ({ recipe }: myProps) => {
   };
 
   return (
-    <Container sx={{ mt: 4 }}>
+    <Container sx={{ my: 4 }}>
       <Grid container justifyContent="center" sx={{ mx: "auto" }}>
         <Grid item xs={12}>
           <Typography variant="h3" mb={4} sx={{ textAlign: "center" }}>

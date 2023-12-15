@@ -115,8 +115,14 @@ const RecipeDetailsPage = () => {
     navigate("/edit-recipe/" + id);
   };
   const handleOpenRate = () => {
-    if (!!user) setOpenRateDialog(true);
-    else {
+    if (!!user && user.status !== "banned") setOpenRateDialog(true);
+    else if (!!user && user.status === "banned") {
+      displayNotification({
+        type: "warning",
+        message: "Zbanowani użytkowniicy nie mogą oceniać przepisów.",
+        open: true,
+      });
+    } else {
       setLoginDialogContent(
         "Jedynie zalogowani użytkownicy mogą ocenić przepis."
       );
@@ -166,6 +172,13 @@ const RecipeDetailsPage = () => {
       );
       setLoginDialogOpen(true);
       return;
+    } else if (!!user && user.status === "banned") {
+      displayNotification({
+        type: "warning",
+        message: "Zbanowani użytkownicy nie mogą dodawać komentarzy.",
+        open: true,
+      });
+      return;
     }
     if (id && user && user.userId && token) {
       const comment = {
@@ -212,6 +225,13 @@ const RecipeDetailsPage = () => {
         "Jedynie zalogowani użytkownicy mogą dodać zdjęcie."
       );
       setLoginDialogOpen(true);
+      return;
+    } else if (!!user && user.status === "banned") {
+      displayNotification({
+        type: "warning",
+        message: "Zbanowani użytkownicy nie mogą dodawać zdjęć.",
+        open: true,
+      });
       return;
     }
     setOpenAddPhoto(true);

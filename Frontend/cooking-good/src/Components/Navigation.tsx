@@ -36,6 +36,7 @@ const MenuLink = styled(NavLink)(({ theme }) => ({
 const Navigation = () => {
   const token = useSelector((state: RootState) => state.auth.token);
   const user = useSelector((state: RootState) => state.auth.user);
+  console.log(user);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -102,33 +103,37 @@ const Navigation = () => {
             )}
             {token && (
               <>
-                <Button
-                  sx={{
-                    color: (theme) => theme.palette.text.light,
-                    fontSize: 18,
-                    textTransform: "capitalize",
-                  }}
-                  onClick={handleAdminClick}
-                  endIcon={<KeyboardArrowDownIcon />}
-                >
-                  Zarządzaj
-                </Button>
-                <Menu
-                  open={adminOpen}
-                  anchorEl={adminAnchorEl}
-                  onClose={handleAdminClose}
-                  onClick={handleAdminClose}
-                >
-                  <MenuItem component={MenuLink} to="/categories">
-                    Kategorie
-                  </MenuItem>
-                  <MenuItem component={MenuLink} to="/reports">
-                    Zgłoszenia
-                  </MenuItem>
-                  <MenuItem component={MenuLink} to="/users">
-                    Użytkownicy
-                  </MenuItem>
-                </Menu>
+                {!!user && user.role === "admin" && (
+                  <>
+                    <Button
+                      sx={{
+                        color: (theme) => theme.palette.text.light,
+                        fontSize: 18,
+                        textTransform: "capitalize",
+                      }}
+                      onClick={handleAdminClick}
+                      endIcon={<KeyboardArrowDownIcon />}
+                    >
+                      Zarządzaj
+                    </Button>
+                    <Menu
+                      open={adminOpen}
+                      anchorEl={adminAnchorEl}
+                      onClose={handleAdminClose}
+                      onClick={handleAdminClose}
+                    >
+                      <MenuItem component={MenuLink} to="/categories">
+                        Kategorie
+                      </MenuItem>
+                      <MenuItem component={MenuLink} to="/reports">
+                        Zgłoszenia
+                      </MenuItem>
+                      <MenuItem component={MenuLink} to="/users">
+                        Użytkownicy
+                      </MenuItem>
+                    </Menu>
+                  </>
+                )}
 
                 <Button
                   sx={{

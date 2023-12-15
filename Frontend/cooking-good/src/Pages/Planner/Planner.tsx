@@ -49,6 +49,7 @@ const Planner = () => {
   const handleNavigate = (date: string) => {
     navigate(`/planner/${date}`);
   };
+
   const renderCellDate = (date: dayjs.Dayjs) => {
     const plan = planner.find(
       (plan) => plan.date === dayjs(date).format("DD-MM-YYYY")

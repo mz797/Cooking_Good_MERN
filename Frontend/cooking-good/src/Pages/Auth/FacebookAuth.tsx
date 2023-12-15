@@ -5,7 +5,7 @@ import { login } from "../../store/authSlice";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useRef } from "react";
-import { Box } from "@mui/material";
+import { Stack } from "@mui/material";
 
 const FacebookAuth = () => {
   const dispatch = useDispatch();
@@ -55,7 +55,7 @@ const FacebookAuth = () => {
     console.log(res);
   };
   return (
-    <Box sx={{ mt: 2 }}>
+    <Stack justifyContent={"center"} sx={{ mt: 2 }}>
       <OAuth2Login
         buttonText="Facebook"
         authorizationUrl="https://www.facebook.com/dialog/oauth"
@@ -67,7 +67,7 @@ const FacebookAuth = () => {
         onFailure={onFailure}
         className="facebook-button"
       />
-    </Box>
+    </Stack>
   );
 };
 export default FacebookAuth;

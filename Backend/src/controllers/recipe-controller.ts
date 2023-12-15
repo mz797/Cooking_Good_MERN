@@ -80,9 +80,7 @@ export const getSingleRecipe = async (
 ) => {
   const params = req.params as RequestParams;
   const id = params.recipeId;
-
   let recipe: IRecipe | null;
-
   try {
     recipe = await Recipe.findById(id)
       .populate("creator", "name image")
@@ -90,18 +88,15 @@ export const getSingleRecipe = async (
       .populate("comments.creator")
       .populate("commentImages.creator");
   } catch (err) {
-    console.log("getSingleRecipe", err);
     const error = new HttpError("Błąd podczas wyszukiwania przepisu!", 500);
     return next(error);
   }
-
   if (!recipe) {
     console.log("getSingleRecipe");
     const error = new HttpError("Nie udało się znależć przepisu!", 404);
     return next(error);
   }
 
-  recipe.visitCount = recipe.visitCount + 1;
   try {
     await recipe.save();
   } catch (err) {

@@ -27,7 +27,6 @@ export const getAllPosts = (
       });
     })
     .catch((err) => {
-      console.log("getAllPosts", err);
       const error = new HttpError(
         "Nie udało się pobrać listy ciekawostek",
         500

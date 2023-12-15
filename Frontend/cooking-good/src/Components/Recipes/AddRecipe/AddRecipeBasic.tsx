@@ -202,8 +202,7 @@ const AddRecipeBasic = ({
       <Grid item>
         <Typography
           sx={{
-            color: (theme) =>
-              errors?.categories ? theme.palette.error.main : "black",
+            color: (theme) => errors?.categories && theme.palette.error.main,
           }}
         >
           Kategorie*:

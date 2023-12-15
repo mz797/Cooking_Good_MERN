@@ -24,7 +24,6 @@ router.get("/:recipeId", getSingleRecipe);
 
 router.get("/download/:recipeId", downloadRecipe);
 
-//middleware sprawdz czy mamy token
 router.use(checkAuth);
 
 router.post("/", fileUpload.single("image"), addRecipe);
